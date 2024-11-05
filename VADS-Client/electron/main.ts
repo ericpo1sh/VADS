@@ -31,7 +31,16 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
+      nodeIntegration: true
     },
+    width: 1920,
+    height: 1080,
+    minWidth: 1440,
+    minHeight: 720,
+    maxHeight: 1080,
+    maxWidth: 1920,
+    center: true,
+    resizable: false
   })
 
   // Test active push message to Renderer-process.
@@ -65,4 +74,4 @@ app.on('activate', () => {
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(createWindow);
