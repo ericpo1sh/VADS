@@ -5,7 +5,7 @@ import { Settings } from './Settings'
 
 export const Sidebar: React.FC = () => {
   return (
-    <div className='flex-col flex'>
+    <div style={{ width: '380px', height: '1080px' }}>
       <MiniMap/>
       <Gauges/>
       <Settings/>

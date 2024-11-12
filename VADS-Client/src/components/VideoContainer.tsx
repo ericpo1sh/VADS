@@ -1,11 +1,31 @@
-import React from 'react';
-import TemplateDroneFootage from '../assets/template_drone_footage.jpg'
+import React, { useEffect, useRef } from 'react';
+import JSMpeg from '@cycjimmy/jsmpeg-player';
 
 export const VideoContainer: React.FC = () => {
-  return (
-    <div className='flex'>
-      <img src={TemplateDroneFootage} alt="Temporary Drone Footage" style={{ border: '2px solid black'}}/>
-    </div>
-  )
-}
+  const videoContainerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (videoContainerRef.current) {
+      new JSMpeg.Player('rtsp://10.8.202.147:8554/stream', {
+        canvas: videoContainerRef.current,
+        autoplay: true,
+        audio: false,
+        loop: true,
+      });
+    }
+  }, []);
+
+  return (
+    <div className="flex">
+      <canvas
+        ref={videoContainerRef}
+        style={{
+          border: '4px solid white',
+          width: '1504px',
+          height: '800px',
+          objectFit: 'cover',
+        }}
+      />
+    </div>
+  );
+};

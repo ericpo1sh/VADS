@@ -33,12 +33,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.mjs'),
       nodeIntegration: true
     },
-    width: 1920,
-    height: 1080,
-    minWidth: 1440,
-    minHeight: 720,
-    maxHeight: 1080,
-    maxWidth: 1920,
+    width: 1900,
+    height: 1050,
     center: true,
     resizable: false
   })
