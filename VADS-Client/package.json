@@ -10,13 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@antmedia/webrtc_adaptor": "^2.11.3",
     "@cycjimmy/jsmpeg-player": "^6.1.2",
+    "@eyevinn/webrtc-player": "^0.13.0",
     "@fontsource/roboto-mono": "^5.1.0",
     "hls.js": "^1.5.17",
     "jsmpeg-player": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-player": "^2.16.0"
+    "react-player": "^2.16.0",
+    "webrtc-adapter": "^9.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",
