@@ -36,8 +36,8 @@ export const Account: React.FC = () => {
           <p style={{ fontFamily: 'Roboto Mono', fontWeight: 700, fontSize: '32px' }}>Hello User</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginBottom: '10px' }}>
-          <button onClick={handleShowLogin} style={{ backgroundColor: 'white', border: '2px solid black', width: '150px', height: '65px', fontWeight: '600', fontSize: '25px', borderRadius: 10, fontFamily: 'Roboto Mono', marginLeft: '6px' }}>Login</button>
-          <button onClick={handleViewStats} style={{ backgroundColor: 'white', border: '2px solid black', width: '175px', height: '65px', fontWeight: '600', fontSize: '25px', borderRadius: 10, fontFamily: 'Roboto Mono', marginRight: '10px' }}>View Stats</button>
+          <button onClick={handleShowLogin} style={{ backgroundColor: 'white', border: '2px solid black', width: '150px', height: '65px', fontWeight: '600', fontSize: '25px', borderRadius: 10, fontFamily: 'Roboto Mono', marginLeft: '6px', cursor: 'pointer' }}>Login</button>
+          <button onClick={handleViewStats} style={{ backgroundColor: 'white', border: '2px solid black', width: '175px', height: '65px', fontWeight: '600', fontSize: '25px', borderRadius: 10, fontFamily: 'Roboto Mono', marginRight: '10px', cursor: 'pointer' }}>View Stats</button>
         </div>
       </div>
 
