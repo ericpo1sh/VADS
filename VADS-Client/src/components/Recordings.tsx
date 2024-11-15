@@ -13,7 +13,7 @@ const videos = [
 export const Recordings: React.FC = () => {
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -21,23 +21,7 @@ export const Recordings: React.FC = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", backgroundColor: "#D9D9D9", width: "44.65%", height: "92%", borderRadius: "20px 0px 0px 20px", margin: "7px 0px 7px 12px", alignContent: "center", justifyContent: "space-around", alignItems: "center" }}>
-      <Slider {...settings}>
-      {videos.map((video, index) => (
-          <div key={index} style={{ textAlign: "center", margin: "0 10px" }}>
-            <img
-              src={video.thumbnail}
-              alt={video.title}
-              style={{
-                width: "50%",
-                height: "50%",
-                borderRadius: "10px",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              }}
-            />
-            <p style={{ fontWeight: "bold", marginTop: "10px" }}>{video.title}</p>
-          </div>
-        ))}
-      </Slider>
+      RECORDINGS
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { VideoContainer } from './components/VideoContainer';
 
 function App() {
   return (
-    <div style={{ backgroundColor: '#444444', height: '1030px', width: '1900px'}}>
+    <div style={{ backgroundColor: '#444444', height: '1026px', width: '1897px'}}>
       <div style={{ display: 'flex',  flexDirection: 'row'}}>
         <div>
           <VideoContainer />
