@@ -14,6 +14,7 @@
     "@cycjimmy/jsmpeg-player": "^6.1.2",
     "@eyevinn/webrtc-player": "^0.13.0",
     "@fontsource/roboto-mono": "^5.1.0",
+    "firebase": "^11.0.2",
     "hls.js": "^1.5.17",
     "jsmpeg-player": "^3.0.3",
     "react": "^18.2.0",
