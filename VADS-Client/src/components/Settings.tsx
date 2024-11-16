@@ -40,7 +40,7 @@ export const Settings: React.FC = () => {
             <h3 style={{ fontSize: '20px', marginBottom: '15px' }}>App Settings</h3>
             <label style={{ display: 'block', marginBottom: '10px' }}>
               Dark Mode
-              <input type="checkbox" checkedc style={{ marginLeft: '10px' }} />
+              <input type="checkbox" checked style={{ marginLeft: '10px' }} />
             </label>
             <label style={{ display: 'block', marginBottom: '10px' }}>
               Language
