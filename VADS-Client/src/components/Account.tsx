@@ -59,7 +59,8 @@ export const Account: React.FC = () => {
           <>
             <h2 style={{ fontFamily: 'Roboto Mono', fontWeight: 700, fontSize: '38px', marginTop: 0, marginBottom: 20 }}>Signup</h2>
             <div style={{ width: '340px', height: '340px', border: '2px solid black', backgroundColor: 'white', alignItems: "center", display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
-              <form style={{ display: "flex", flexDirection: 'column', gap: 15, marginTop: 25 }}>
+              <form style={{ display: "flex", flexDirection: 'column', gap: 10, marginTop: 25 }}>
+                <input type="email" placeholder="Email" className="login-input" />
                 <input type="text" placeholder="Username" className="login-input" />
                 <input type="password" placeholder="Password" className="login-input" />
                 <button type="submit" className="login-button">Signup</button>
@@ -74,7 +75,7 @@ export const Account: React.FC = () => {
             <h2 style={{ fontFamily: 'Roboto Mono', fontWeight: 700, fontSize: '38px', marginTop: 0, marginBottom: 20 }}>Login</h2>
             <div style={{ width: '340px', height: '340px', border: '2px solid black', backgroundColor: 'white', alignItems: "center", display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
               <form style={{ display: "flex", flexDirection: 'column', gap: 15, marginTop: 25 }}>
-                <input type="text" placeholder="Username" className="login-input" />
+                <input type="email" placeholder="Email" className="login-input" />
                 <input type="password" placeholder="Password" className="login-input" />
                 <button type="submit" className="login-button">Login</button>
               </form>
