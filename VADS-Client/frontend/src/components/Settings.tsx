@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export const Settings: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [profilePic, setProfilePic] = useState<string | null>(null); // State to store the user's profile picture
+  const [profilePic, setProfilePic] = useState<string | null>(null);
 
   const toggleSettings = () => {
     setIsSettingsOpen(prevState => !prevState);

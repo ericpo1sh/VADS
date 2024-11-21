@@ -11,23 +11,18 @@ export const VideoContainer: React.FC = () => {
       const video = videoContainerRef.current;
       if (Hls.isSupported()) {
         const hls = new Hls();
-        hls.loadSource('http://10.8.202.57:8888/stream/index.m3u8');
+        hls.loadSource('http://10.8.202.38:8888/stream/index.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().then(() => setIsLiveStreamActive(true)).catch(() => setIsLiveStreamActive(false));
+          video
+            .play()
+            .then(() => setIsLiveStreamActive(true))
+            .catch(() => setIsLiveStreamActive(false));
         });
         hls.on(Hls.Events.ERROR, () => setIsLiveStreamActive(false));
 
         return () => {
           hls.destroy();
-        };
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = 'http://10.8.202.57/live/stream.m3u8';
-        video.play().then(() => setIsLiveStreamActive(true)).catch(() => setIsLiveStreamActive(false));
-
-        return () => {
-          video.pause();
-          video.src = '';
         };
       } else {
         setIsLiveStreamActive(false);
@@ -37,18 +32,7 @@ export const VideoContainer: React.FC = () => {
 
   return (
     <div className="flex">
-      {!isLiveStreamActive ? (
-        <img
-          src={liveStreamError}
-          alt="Live Stream Placeholder"
-          style={{
-            width: '1504px',
-            height: '800px',
-            objectFit: 'cover',
-            border: '4px solid white',
-          }}
-        />
-      ) : (
+      {isLiveStreamActive ? (
         <video
           ref={videoContainerRef}
           controls
@@ -58,6 +42,17 @@ export const VideoContainer: React.FC = () => {
             width: '1504px',
             height: '800px',
             objectFit: 'cover',
+          }}
+        />
+      ) : (
+        <img
+          src={liveStreamError}
+          alt="Live stream error"
+          style={{
+            width: '1504px',
+            height: '800px',
+            objectFit: 'cover',
+            border: '4px solid white',
           }}
         />
       )}
