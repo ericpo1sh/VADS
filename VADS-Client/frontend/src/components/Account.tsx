@@ -1,30 +1,21 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import user_icon from '../assets/user-icon.webp';
 import './styles/Account.css';
-import { useAuth } from "./AuthProvider";
-
-interface UserData {
-  email: string;
-  username: string;
-  profilePic: string;
-  total_flight_time: number;
-  highest_altitude: number;
-  total_distance: number;
-  top_speed: number;
-}
+import { useAuth } from './AuthProvider';
+import { useUser } from './UserContext';
 
 export const Account: React.FC = () => {
   const [showStats, setShowStats] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const auth = useAuth();
+  const { userData, setUserData } = useUser();
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerName, setRegisterName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
 
   const handleViewStats = () => {
     setShowStats((prev) => !prev);
@@ -50,8 +41,8 @@ export const Account: React.FC = () => {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-  
-    const userData = {
+
+    const newUserData = {
       email: registerEmail,
       username: registerName,
       profilePic: '',
@@ -60,24 +51,24 @@ export const Account: React.FC = () => {
       total_distance: 0,
       top_speed: 0
     };
-  
+
     try {
-      await auth.register(registerEmail, registerPassword)
+      await auth.register(registerEmail, registerPassword);
       const response = await fetch('http://localhost:5000/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(newUserData)
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log('User created:', data);
         alert('Account created successfully');
         setIsSignup(false);
         setShowLogin(false);
-        handleFetchUser(registerEmail);
+        setUserData(data);
       } else {
         alert('Unable to create an account');
       }
@@ -96,7 +87,11 @@ export const Account: React.FC = () => {
       await auth.login(loginEmail, loginPassword);
       alert('Logged in successfully');
       setShowLogin(false);
-      handleFetchUser(loginEmail);
+      const response = await fetch(`http://localhost:5000/api/user/${loginEmail}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUserData(data);
+      }
     } catch (err) {
       alert('Unable to log in');
     } finally {
@@ -110,22 +105,9 @@ export const Account: React.FC = () => {
       alert('Logged out successfully');
       setUserData(null);
       setLoginEmail('');
+      setLoginPassword('')
     } catch (err) {
       alert('Unable to log out');
-    }
-  };
-
-  const handleFetchUser = async (email: string) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/user/${email}`);
-      if (response.ok) {
-        const data = await response.json();
-        setUserData(data);
-      } else {
-        console.error('User not found');
-      }
-    } catch (error) {
-      console.error('Error:', error);
     }
   };
 

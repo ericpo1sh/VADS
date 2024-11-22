@@ -1,35 +1,55 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
+import { useUser } from './UserContext';
+import { User } from 'firebase/auth';
+import { updatePassword } from 'firebase/auth';
 
-interface UserData {
-  email: string;
-  username: string;
-  profilePic: string;
-  total_flight_time: number;
-  highest_altitude: number;
-  total_distance: number;
-  top_speed: number;
-}
+
 
 export const Settings: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const auth = useAuth();
+  const { userData, setUserData } = useUser(); // @ts-ignore
+  const [newPassword, setNewPassword] = useState('');
 
   const toggleSettings = () => {
     setIsSettingsOpen(prevState => !prevState);
   };
 
-  const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleUpdateUsername = async () => {
+    if (!auth.user?.email) {
+      alert("No user is logged in.");
+      return;
+    }
+
+    if (!newUsername) {
+      alert("Username cannot be empty.");
+      return;
+    }
+
+    try {
+      // API call to update username in MongoDB
+      const response = await fetch('http://localhost:5000/api/user/username', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: auth.user.email, newUsername }),
+      });
+
+      if (response.ok) {
+        setUserData(prev => prev ? { ...prev, username: newUsername } : prev); 
+        alert('Username updated successfully!');
+      } else {
+        const errorData = await response.json();
+        console.error('Error updating username:', errorData);
+        alert('Unable to update username.');
+      }
+    } catch (error) {
+      console.error('Error updating username:', error);
+      alert('Unable to update username.');
     }
   };
 
@@ -67,39 +87,42 @@ export const Settings: React.FC = () => {
     }
   };
 
-  const handleUpdateUsername = async () => {
-    if (!auth.user?.email) {
+  const handleUpdatePassword = async () => {
+    const currentUser = auth.user;
+  
+    if (!currentUser) {
       alert("No user is logged in.");
       return;
     }
   
-    if (!newUsername) {
-      alert("Username cannot be empty.");
+    if (!newPassword) {
+      alert("Password cannot be empty.");
       return;
     }
   
     try {
-      // API call to update username in MongoDB
-      const response = await fetch('http://localhost:5000/api/user/username', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: auth.user.email, newUsername }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setUserData(data.user); // Update the state with the new user data
-        alert('Username updated successfully!');
+      await updatePassword(currentUser, newPassword);
+      alert('Password updated successfully!');
+      setNewPassword(''); // Clear the password field
+    } catch (error: any) {
+      if (error.code === 'auth/requires-recent-login') {
+        // This error is thrown if the user's last sign-in time does not meet the security threshold.
+        alert("Please re-login and try again.");
       } else {
-        const errorData = await response.json();
-        console.error('Error updating username:', errorData);
-        alert('Unable to update username.');
+        console.error('Error updating password:', error);
+        alert('Unable to update password.');
       }
-    } catch (error) {
-      console.error('Error updating username:', error);
-      alert('Unable to update username.');
+    }
+  };
+
+  const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePic(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -142,9 +165,9 @@ export const Settings: React.FC = () => {
             <button onClick={handleUpdateUsername} style={{ marginTop: '0px', padding: '10px 15px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer' }}>Update Username</button>
             <label style={{ display: 'flex', marginBottom: '10px', flexDirection: 'column', gap: 10, marginTop: '15px' }}>
               Change Password
-              <input type="password" placeholder="New Password" style={{ padding: '5px', backgroundColor: '#222', color: 'white', width: '150px' }} />
+              <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)}  type="password" placeholder="New Password" style={{ padding: '5px', backgroundColor: '#222', color: 'white', width: '150px' }} />
             </label>
-            <button style={{ marginTop: '0px', padding: '10px 15px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer' }}>Update Password</button>
+            <button onClick={handleUpdatePassword} style={{ marginTop: '0px', padding: '10px 15px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer' }}>Update Password</button>
 
             {/* Profile Picture Section */}
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: 4, marginTop: '5px' }}>
