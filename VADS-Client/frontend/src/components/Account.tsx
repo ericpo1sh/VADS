@@ -25,7 +25,6 @@ export const Account: React.FC = () => {
   const [registerName, setRegisterName] = useState('');
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [refresh, setRefresh] = useState(false);
 
   const handleViewStats = () => {
     setShowStats((prev) => !prev);
@@ -111,7 +110,6 @@ export const Account: React.FC = () => {
       alert('Logged out successfully');
       setUserData(null);
       setLoginEmail('');
-      setRefresh((prev) => !prev);
     } catch (err) {
       alert('Unable to log out');
     }
