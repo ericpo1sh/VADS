@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
+import { useAuth } from './AuthProvider';
+
+interface UserData {
+  email: string;
+  username: string;
+  profilePic: string;
+  total_flight_time: number;
+  highest_altitude: number;
+  total_distance: number;
+  top_speed: number;
+}
 
 export const Settings: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [newUsername, setNewUsername] = useState('');
+  const auth = useAuth();
 
   const toggleSettings = () => {
     setIsSettingsOpen(prevState => !prevState);
@@ -19,8 +33,74 @@ export const Settings: React.FC = () => {
     }
   };
 
-  const handleDeleteAccount = () => {
-    alert("Account deleted successfully!");
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      // Delete user from Firebase authentication
+      const currentUser = auth.user;
+
+      if (currentUser) {
+        await currentUser.delete(); // Delete the user from Firebase Authentication
+        console.log("Firebase user deleted");
+
+        // Delete user from MongoDB through the API
+        const response = await fetch(`http://localhost:5000/api/user/${currentUser.email}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          alert('Account deleted successfully!');
+        } else {
+          const errorData = await response.json();
+          console.error('Error deleting user in MongoDB:', errorData);
+          alert('Unable to delete account in MongoDB.');
+        }
+      } else {
+        alert('No user is currently logged in.');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Unable to delete account.');
+    }
+  };
+
+  const handleUpdateUsername = async () => {
+    if (!auth.user?.email) {
+      alert("No user is logged in.");
+      return;
+    }
+  
+    if (!newUsername) {
+      alert("Username cannot be empty.");
+      return;
+    }
+  
+    try {
+      // API call to update username in MongoDB
+      const response = await fetch('http://localhost:5000/api/user/username', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: auth.user.email, newUsername }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setUserData(data.user); // Update the state with the new user data
+        alert('Username updated successfully!');
+      } else {
+        const errorData = await response.json();
+        console.error('Error updating username:', errorData);
+        alert('Unable to update username.');
+      }
+    } catch (error) {
+      console.error('Error updating username:', error);
+      alert('Unable to update username.');
+    }
   };
 
   return (
@@ -57,10 +137,9 @@ export const Settings: React.FC = () => {
             <h3 style={{ fontSize: '20px', marginBottom: '15px' }}>Account Settings</h3>
             <label style={{ display: 'flex', marginBottom: '10px', flexDirection: 'column', gap: 10, marginTop: '10px' }}>
               Change Username
-              <input type="text" placeholder="New Username" style={{ padding: '5px', backgroundColor: '#222', color: 'white', width: '150px' }} />
+              <input value={newUsername} onChange={(e) => setNewUsername(e.target.value)}  type="text" placeholder="New Username" style={{ padding: '5px', backgroundColor: '#222', color: 'white', width: '150px' }} />
             </label>
-            <button style={{ marginTop: '0px', padding: '10px 15px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer' }}>Update Username</button>
-
+            <button onClick={handleUpdateUsername} style={{ marginTop: '0px', padding: '10px 15px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer' }}>Update Username</button>
             <label style={{ display: 'flex', marginBottom: '10px', flexDirection: 'column', gap: 10, marginTop: '15px' }}>
               Change Password
               <input type="password" placeholder="New Password" style={{ padding: '5px', backgroundColor: '#222', color: 'white', width: '150px' }} />
