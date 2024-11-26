@@ -3,7 +3,7 @@ import { useAuth } from './AuthProvider';
 import { useUser } from './UserContext';
 import { updatePassword } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../../firebaseConfig'; // Assuming firebaseConfig file initializes Firebase and exports 'storage'
+import { storage } from '../../firebaseConfig';
 
 export const Settings: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
