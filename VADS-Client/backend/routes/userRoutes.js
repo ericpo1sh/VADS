@@ -90,4 +90,24 @@ router.put('/user/username', async (req, res) => {
     }
 });
 
+router.put('/user/profilePic', async (req, res) => {
+    const { email, profilePic } = req.body;
+
+    if (!email || !profilePic) {
+        return res.status(400).json({ message: 'Email and profile picture URL are required.' });
+    }
+
+    try {
+        const user = await UserData.findOneAndUpdate({ email }, { profilePic }, { new: true });
+        if (user) {
+            res.json({ user });
+        } else {
+            res.status(404).json({ message: 'User not found.' });
+        }
+    } catch (error) {
+        console.error('Error updating profile picture:', error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 module.exports = router;

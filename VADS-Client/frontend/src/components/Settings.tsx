@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useUser } from './UserContext';
-import { User } from 'firebase/auth';
+import { getAuth, User } from 'firebase/auth';
 import { updatePassword } from 'firebase/auth';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 
 
@@ -126,6 +127,49 @@ export const Settings: React.FC = () => {
     }
   };
 
+  const handleUpdateProfilePicture = async () => {
+    if (!auth.user || !profilePic) {
+      alert('No user is logged in or no profile picture selected.');
+      return;
+    }
+  
+    const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
+    const file = fileInput?.files?.[0];
+  
+    if (!file) {
+      alert('No file selected for upload.');
+      return;
+    }
+  
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `profilePictures/${auth.user.uid}/${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+  
+      // Save the download URL to MongoDB via an API call
+      const response = await fetch('http://localhost:5000/api/user/profilePic', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: auth.user.email, profilePic: downloadURL }),
+      });
+  
+      if (response.ok) {
+        setUserData((prev) => (prev ? { ...prev, profilePic: downloadURL } : prev));
+        alert('Profile picture updated successfully!');
+      } else {
+        const errorData = await response.json();
+        console.error('Error saving profile picture URL:', errorData);
+        alert('Unable to save profile picture.');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Unable to upload image.');
+    }
+  };
+
   return (
     <div style={{ width: '100%', border: '4px solid white', height: '80px', marginTop: '-3px', position: 'relative', backgroundColor: '#323232' }}>
       <button style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} aria-label="Settings" onClick={toggleSettings}>
@@ -175,7 +219,12 @@ export const Settings: React.FC = () => {
               <input type="file" accept="image/*" onChange={handleProfilePicChange} style={{ marginBottom: '10px' }} />
               {profilePic && (
                 <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'row', gap: '20px', alignItems: 'center' }}>
-                  <button style={{ marginTop: '0px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer', height: '35px', width: '140px' }}>Update Picture</button>
+                  <button
+                    onClick={handleUpdateProfilePicture}
+                    style={{ marginTop: '0px', backgroundColor: '#444', color: 'white', border: 'none', cursor: 'pointer', height: '35px', width: '140px' }}
+                  >
+                    Update Picture
+                  </button>
                   <img src={profilePic} alt="Profile Preview" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid white' }} />
                 </div>
               )}
