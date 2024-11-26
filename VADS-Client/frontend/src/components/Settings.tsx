@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useUser } from './UserContext';
-import { getAuth, User } from 'firebase/auth';
 import { updatePassword } from 'firebase/auth';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-
-
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../firebaseConfig'; // Assuming firebaseConfig file initializes Firebase and exports 'storage'
 
 export const Settings: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const auth = useAuth();
   const { userData, setUserData } = useUser(); // @ts-ignore
@@ -107,7 +106,6 @@ export const Settings: React.FC = () => {
       setNewPassword(''); // Clear the password field
     } catch (error: any) {
       if (error.code === 'auth/requires-recent-login') {
-        // This error is thrown if the user's last sign-in time does not meet the security threshold.
         alert("Please re-login and try again.");
       } else {
         console.error('Error updating password:', error);
@@ -117,47 +115,40 @@ export const Settings: React.FC = () => {
   };
 
   const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (event.target.files && event.target.files[0]) {
+      setProfilePic(event.target.files[0]);
     }
   };
 
   const handleUpdateProfilePicture = async () => {
-    if (!auth.user || !profilePic) {
-      alert('No user is logged in or no profile picture selected.');
+    if (!profilePic) {
+      alert('No profile picture selected.');
       return;
     }
-  
-    const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
-    const file = fileInput?.files?.[0];
-  
-    if (!file) {
-      alert('No file selected for upload.');
+
+    if (!auth.user) {
+      alert('No user is logged in.');
       return;
     }
-  
+
     try {
-      const storage = getStorage();
-      const storageRef = ref(storage, `profilePictures/${auth.user.uid}/${file.name}`);
-      const snapshot = await uploadBytes(storageRef, file);
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, `profilePictures/${auth.user.uid}/${profilePic.name}`);
+      const snapshot = await uploadBytes(storageRef, profilePic);
       const downloadURL = await getDownloadURL(snapshot.ref);
-  
+
       // Save the download URL to MongoDB via an API call
-      const response = await fetch('http://localhost:5000/api/user/profilePic', {
+      const response = await fetch(`http://localhost:5000/api/user/profilePic`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: auth.user.email, profilePic: downloadURL }),
       });
-  
+
       if (response.ok) {
-        setUserData((prev) => (prev ? { ...prev, profilePic: downloadURL } : prev));
+        setUserData(prev => prev ? { ...prev, profilePic: downloadURL } : prev);
+        setUrl(downloadURL);
         alert('Profile picture updated successfully!');
       } else {
         const errorData = await response.json();
@@ -225,7 +216,7 @@ export const Settings: React.FC = () => {
                   >
                     Update Picture
                   </button>
-                  <img src={profilePic} alt="Profile Preview" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid white' }} />
+                  <img src={url || ''} alt="Profile Preview" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid white' }} />
                 </div>
               )}
             </div>

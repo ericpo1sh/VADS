@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import user_icon from '../assets/user-icon.webp';
+import user_icon from '../assets/user-icon.png';
 import './styles/Account.css';
 import { useAuth } from './AuthProvider';
 import { useUser } from './UserContext';
@@ -115,8 +115,8 @@ export const Account: React.FC = () => {
     <div style={{ position: 'relative', width: '25%', zIndex: 0 }}>
       <div style={{ display: "flex", flexDirection: 'column', backgroundColor: '#D9D9D9', width: '100%', height: '92%', margin: '7px 0px 7px 7px', borderRadius: '0px 20px 20px 0px', justifyContent: 'space-around' }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: "center", margin: '0px 0px 0px -15px' }}>
-          <img src={userData?.profilePic || user_icon} alt="placeholder user pic" width={'165px'} height={'100px'} />
-          <p style={{ fontFamily: 'Roboto Mono', fontWeight: 700, fontSize: '32px' }}>Hello {userData?.username || 'Guest'}</p>
+          <img src={userData?.profilePic || user_icon} alt="placeholder user pic" width={'90px'} height={'90px'} style={{ marginLeft: '30px' }} />
+          <p style={{ fontFamily: 'Roboto Mono', fontWeight: 700, fontSize: '32px', marginLeft: '20px' }}>Hello {userData?.username || 'Guest'}</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginBottom: '10px' }}>
           <button 
@@ -131,7 +131,7 @@ export const Account: React.FC = () => {
       <div className={`stats-panel ${showStats ? 'slide-up' : 'slide-down'}`}>
         <h2 style={{ fontFamily: 'Roboto Mono', fontWeight: 700, fontSize: '38px', marginTop: 0, marginBottom: 20 }}>Your Stats</h2>
         <div style={{ display: "flex", flexDirection: 'column', justifyContent: "center", alignItems: "center" }}>
-          <img src={userData?.profilePic || user_icon} alt="placeholder user pic" width={'165px'} height={'100px'} />
+          <img src={userData?.profilePic || user_icon} alt="placeholder user pic" width={'100px'} height={'100px'} />
           <h2>{userData?.username}</h2>
         </div>
         <div className="flight-data" style={{ width: '340px', height: '200px', border: '2px solid black', backgroundColor: 'white', alignItems: "center", display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
