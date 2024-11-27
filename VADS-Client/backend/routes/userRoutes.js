@@ -90,6 +90,7 @@ router.put('/user/username', async (req, res) => {
     }
 });
 
+// PUT /api/user/profilePic - Updating the users profile pic
 router.put('/user/profilePic', async (req, res) => {
     const { email, profilePic } = req.body;
 
@@ -107,6 +108,17 @@ router.put('/user/profilePic', async (req, res) => {
     } catch (error) {
         console.error('Error updating profile picture:', error);
         res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+// GET /api/users - Fetch all users & data
+router.get('/users', async (req, res) => {
+    try {
+        const users = await UserData.find({});
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).send('Server error');
     }
 });
 
