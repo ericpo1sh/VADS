@@ -42,6 +42,7 @@ export const Settings: React.FC = () => {
       if (response.ok) {
         setUserData(prev => prev ? { ...prev, username: newUsername } : prev); 
         alert('Username updated successfully!');
+        setNewUsername('')
       } else {
         const errorData = await response.json();
         console.error('Error updating username:', errorData);
