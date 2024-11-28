@@ -18,6 +18,13 @@ export const Leaderboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof User>('total_flight_time');
   const [isAscending, setIsAscending] = useState<boolean>(false);
 
+  const capitalizeWords = (text: string) => {
+    return text
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -78,7 +85,7 @@ export const Leaderboard: React.FC = () => {
             <img src={user.profilePic} alt={`${user.username} profile`} style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }}/>
             <div>
               <div style={{ fontWeight: 'bold' }}>{user.username}</div>
-              <div>{sortField.replace(/_/g, ' ')}: {user[sortField]}</div>
+              <div>{capitalizeWords(sortField.replace(/_/g, ' '))}: {user[sortField]}</div>
             </div>
           </div>
         ))}
