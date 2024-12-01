@@ -8,7 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define UART_DEV "/dev/ttyUSB_"
+#define UART_DEV "/dev/ttyUSB0"
 
 // struct termios {
 //     tcflag_t c_iflag;	/* input mode flags */
