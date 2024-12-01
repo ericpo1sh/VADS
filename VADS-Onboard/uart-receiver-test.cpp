@@ -58,6 +58,7 @@ int main(void) {
 			read_len = read(uart_fd, buffer, 256);
 			buffer[read_len] = '\x00';
 			std::cout << buffer << std::endl;
+			memset(buffer, '\x00', 256);
 			wait = true;
 		}
 	}
