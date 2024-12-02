@@ -39,7 +39,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 
 	if (argc != 2)
 		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)");
-	uart_fd = open(argv[1], O_RDWR | O_NOCTTY | O_SYNC);
+	uart_fd = open(argv[1], O_RDWR | O_NOCTTY);
 	if (uart_fd < 0)
 		return fprintf(stderr, "open error - %i: %s\n", errno, strerror(errno)), 1;
 	if (tcgetattr(uart_fd, &tty))
@@ -51,9 +51,8 @@ int main(int argc __attribute__((unused)), char **argv) {
 	signal(SIGINT, signal_SIGINT);
 	while(receiving) {
 		read_len = read(uart_fd, buffer, 256);
-		std::cout << buffer;
 		if (read_len)
-			putchar('\n');
+			std::cout << buffer << std::endl;
 		memset(buffer, '\x00', 256);
 		fflush(stdout);
 	}
@@ -70,44 +69,21 @@ int main(int argc __attribute__((unused)), char **argv) {
  * Return: 0 upon success, otherwise 1
  */
 static int tty_config(termios_t *tty, int port) {
-	// cfmakeraw(tty);
-	// cfsetospeed(tty, B57600);
-	// cfsetispeed(tty, B57600);
-	// tty->c_cflag = (tty->c_cflag & ~CSIZE) | CS8;
-	// tty->c_iflag &= ~IGNBRK;
-	// tty->c_lflag = 0;
-	// tty->c_oflag = 0;
-	// tty->c_cc[VMIN] = 0;
-	// tty->c_cc[VTIME] = 10;
-	// tty->c_iflag &= ~(IXON | IXOFF | IXANY);
-	// tty->c_cflag |= (CLOCAL | CREAD);
-	// tty->c_cflag &= ~(PARENB | PARODD);
-	// tty->c_cflag |= 0;
-	// tty->c_cflag &= ~CSTOPB;
-	// tty->c_cflag &= ~CRTSCTS;
-	tty->c_cflag &= ~PARENB;
-	tty->c_cflag &= ~CSTOPB;
-	tty->c_cflag &= ~CSIZE;
-	tty->c_cflag |= CS8;
-	tty->c_cflag &= ~CRTSCTS;
-	tty->c_cflag |= CREAD | CLOCAL;
-
-	tty->c_lflag &= ~ICANON;
-	tty->c_lflag &= ~ECHO;
-	tty->c_lflag &= ~ECHOE;
-	tty->c_lflag &= ~ECHONL;
-	tty->c_lflag &= ~ISIG;
-
-	tty->c_iflag &= ~(IXON | IXOFF | IXANY);
-	tty->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL);
-
-	tty->c_oflag &= ~OPOST;
-	tty->c_oflag &= ~ONLCR;
-
-	tty->c_cc[VTIME] = 100;
+	cfmakeraw(tty);
+	cfsetospeed(tty, B57600);
+	cfsetispeed(tty, B57600);
+	tty->c_cflag = (tty->c_cflag & ~CSIZE) | CS8;
+	tty->c_iflag &= ~IGNBRK;
+	tty->c_lflag = 0;
+	tty->c_oflag = 0;
 	tty->c_cc[VMIN] = 0;
-	cfsetispeed(tty, B9600);
-	cfsetospeed(tty, B9600);
+	tty->c_cc[VTIME] = 10;
+	tty->c_iflag &= ~(IXON | IXOFF | IXANY);
+	tty->c_cflag |= (CLOCAL | CREAD);
+	tty->c_cflag &= ~(PARENB | PARODD);
+	tty->c_cflag |= 0;
+	tty->c_cflag &= ~CSTOPB;
+	tty->c_cflag &= ~CRTSCTS;
 	if (tcsetattr(port, TCSANOW, tty))
 		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
 	return 0;
