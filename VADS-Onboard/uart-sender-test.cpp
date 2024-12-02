@@ -9,7 +9,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define UART_DEV "/dev/ttyAMA0"
+#define UART_DEV "/dev/ttyUSB0"
 
 // struct termios {
 //     tcflag_t c_iflag;	/* input mode flags */
@@ -61,7 +61,7 @@ int main(void) {
 		if (prompt_ret < 0)
 			continue;
 		write(uart_fd, input, strlen(input) - 1);
-		std::cout << "SENT: \"" << input << "\"";
+		std::cout << "SENT: " << input;
 		if (input)
 			free(input), input = nullptr;
 		memset(&buffer, '\x00', sizeof(buffer));
