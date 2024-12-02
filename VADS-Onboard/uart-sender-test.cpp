@@ -89,8 +89,6 @@ static int tty_config(termios_t *tty, int port) {
 	tty->c_cflag |= 0;
 	tty->c_cflag &= ~CSTOPB;
 	tty->c_cflag &= ~CRTSCTS;
-	cfsetispeed(tty, B9600);
-	cfsetospeed(tty, B9600);
 	if (tcsetattr(port, TCSANOW, tty))
 		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
 	return 0;
