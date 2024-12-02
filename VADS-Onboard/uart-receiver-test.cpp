@@ -33,9 +33,9 @@ volatile bool receiving = true;
  * Return: 0, always
  */
 int main(int argc __attribute__((unused)), char **argv) {
-	int uart_fd = -1, read_len = 0;
+	int uart_fd = -1, read_len = 0, index = 0;
 	termios_t tty, save;
-	char buffer[256] = {0};
+	char buffer[256] = {0}, read_char = -1;
 
 	if (argc != 2)
 		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)");
@@ -50,8 +50,9 @@ int main(int argc __attribute__((unused)), char **argv) {
 	usleep(1000);
 	signal(SIGINT, signal_SIGINT);
 	while(receiving) {
-		read_len = read(uart_fd, buffer, 256);
-		if (read_len)
+		for (index = 0; (read_len = read(uart_fd, &read_char, 1)); ++index)
+			buffer[index] = read_char;
+		if (index)
 			std::cout << buffer << std::endl;
 		memset(buffer, '\x00', 256);
 		fflush(stdout);
