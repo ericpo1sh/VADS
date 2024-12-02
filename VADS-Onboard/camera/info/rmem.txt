@@ -1,0 +1,1 @@
+/proc/sys/net/core/rmem_max . 180224
