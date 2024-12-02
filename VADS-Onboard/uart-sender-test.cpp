@@ -24,8 +24,8 @@
 
 typedef struct termios termios_t;
 
-static int tty_config(termios_t *tty, int port);
-static void signal_SIGINT(int sig);
+// static int tty_config(termios_t *tty, int port);
+// static void signal_SIGINT(int sig);
 static ssize_t prompt(char **input, std::size_t *len);
 static int empty_input(char *input);
 
@@ -45,19 +45,22 @@ int main(void) {
 	if (uart_fd < 0)
 		return fprintf(stderr, "open error - %i: %s\n", errno, strerror(errno)), 1;
 	tcgetattr(uart_fd, &old);
-	if (tty_config(&tty, uart_fd))
-		return tcsetattr(uart_fd, TCSANOW, &old), 1;
-	if (flock(uart_fd, LOCK_EX | LOCK_NB) == -1)
-		throw std::runtime_error("Serial port file descriptor already otherwise locked");
+	// if (tty_config(&tty, uart_fd))
+	// 	return tcsetattr(uart_fd, TCSANOW, &old), 1;
+	// if (flock(uart_fd, LOCK_EX | LOCK_NB) == -1)
+	// 	throw std::runtime_error("Serial port file descriptor already otherwise locked");
+	tty.c_iflag = IGNBRK | IGNPAR;
+	tty.c_oflag = 0;
+	tty.c_lflag = 0;
+	cfsetspeed(&tty, B9600);
 	usleep(1000);
-	signal(SIGINT, signal_SIGINT);
+	// signal(SIGINT, signal_SIGINT);
 	while (sending) {
 		prompt_ret = prompt(&input, &input_len);
 		if (prompt_ret < 0)
 			continue;
-		write(uart_fd, input, strlen(input));
-		std::cout << "SENT: " << input << std::endl;
-		fflush(stdout);
+		write(uart_fd, input, strlen(input) - 1);
+		std::cout << "SENT: " << input;
 		if (input)
 			free(input), input = nullptr;
 		memset(&buffer, '\x00', sizeof(buffer));
@@ -67,48 +70,48 @@ int main(void) {
 	return (0);
 }
 
-/**
- * tty_config - sets flags for and configures termios data structure
- * @tty: pointer to termios data structure
- * @port: file descriptor for open serial port
- * Return: 0 upon success, otherwise 1
- */
-static int tty_config(termios_t *tty, int port) {
-	if (tcgetattr(port, tty))
-		return fprintf(stderr, "tcgetattr error - %i: %s\n", errno, strerror(errno)), 1;
-	tty->c_cflag &= ~PARENB;
-	tty->c_cflag &= ~CSTOPB;
-	tty->c_cflag &= ~CSIZE;
-	tty->c_cflag |= CS8;
-	tty->c_cflag &= ~CRTSCTS;
-	tty->c_cflag |= CREAD | CLOCAL;
+// /**
+//  * tty_config - sets flags for and configures termios data structure
+//  * @tty: pointer to termios data structure
+//  * @port: file descriptor for open serial port
+//  * Return: 0 upon success, otherwise 1
+//  */
+// static int tty_config(termios_t *tty, int port) {
+// 	if (tcgetattr(port, tty))
+// 		return fprintf(stderr, "tcgetattr error - %i: %s\n", errno, strerror(errno)), 1;
+// 	tty->c_cflag &= ~PARENB;
+// 	tty->c_cflag &= ~CSTOPB;
+// 	tty->c_cflag &= ~CSIZE;
+// 	tty->c_cflag |= CS8;
+// 	tty->c_cflag &= ~CRTSCTS;
+// 	tty->c_cflag |= CREAD | CLOCAL;
 
-	tty->c_lflag &= ~ICANON;
-	tty->c_lflag &= ~ECHO;
-	tty->c_lflag &= ~ECHOE;
-	tty->c_lflag &= ~ECHONL;
-	tty->c_lflag &= ~ISIG;
+// 	tty->c_lflag &= ~ICANON;
+// 	tty->c_lflag &= ~ECHO;
+// 	tty->c_lflag &= ~ECHOE;
+// 	tty->c_lflag &= ~ECHONL;
+// 	tty->c_lflag &= ~ISIG;
 
-	tty->c_iflag &= ~(IXON | IXOFF | IXANY);
-	tty->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL);
+// 	tty->c_iflag &= ~(IXON | IXOFF | IXANY);
+// 	tty->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL);
 
-	tty->c_oflag &= ~OPOST;
-	tty->c_oflag &= ~ONLCR;
+// 	tty->c_oflag &= ~OPOST;
+// 	tty->c_oflag &= ~ONLCR;
 
-	tty->c_cc[VTIME] = 10;
-	tty->c_cc[VMIN] = 0;
-	cfsetispeed(tty, B9600);
-	cfsetospeed(tty, B9600);
-	if (tcsetattr(port, TCSANOW, tty))
-		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
-	return 0;
-}
+// 	tty->c_cc[VTIME] = 10;
+// 	tty->c_cc[VMIN] = 0;
+// 	cfsetispeed(tty, B9600);
+// 	cfsetospeed(tty, B9600);
+// 	if (tcsetattr(port, TCSANOW, tty))
+// 		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
+// 	return 0;
+// }
 
-/**
- * signal_SIGINT - defines instructions upon SIGINT, as input to signal
- * @sig: input signal
- */
-static void signal_SIGINT(int sig __attribute__((unused))) { sending = false; }
+// /**
+//  * signal_SIGINT - defines instructions upon SIGINT, as input to signal
+//  * @sig: input signal
+//  */
+// static void signal_SIGINT(int sig __attribute__((unused))) { sending = false; }
 
 /**
  * prompt - gets line from input and maintains prompt
