@@ -53,6 +53,7 @@ int main(void) {
 	tty.c_oflag = 0;
 	tty.c_lflag = 0;
 	cfsetspeed(&tty, B9600);
+	tcsetattr(uart_fd, TCSAFLUSH, &tty);
 	usleep(1000);
 	// signal(SIGINT, signal_SIGINT);
 	while (sending) {
@@ -60,7 +61,7 @@ int main(void) {
 		if (prompt_ret < 0)
 			continue;
 		write(uart_fd, input, strlen(input) - 1);
-		std::cout << "SENT: " << input;
+		std::cout << "SENT: \"" << input << "\"";
 		if (input)
 			free(input), input = nullptr;
 		memset(&buffer, '\x00', sizeof(buffer));
