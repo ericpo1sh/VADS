@@ -73,18 +73,13 @@ static int tty_config(termios_t *tty, int port) {
 	cfmakeraw(tty);
 	cfsetospeed(tty, B57600);
 	cfsetispeed(tty, B57600);
-	tty->c_cflag = (tty->c_cflag & ~CSIZE) | CS8;
-	tty->c_iflag &= ~IGNBRK;
+	tty->c_cflag |= (CS8 | CLOCAL | CREAD);
+	tty->c_cflag &= ~(CSIZE | CSTOPB | CRTSCTS | PARENB | PARODD);
+	tty->c_iflag &= ~(IGNBRK | IXON | IXOFF | IXANY);
 	tty->c_lflag = 0;
 	tty->c_oflag = 0;
 	tty->c_cc[VMIN] = 0;
 	tty->c_cc[VTIME] = 10;
-	tty->c_iflag &= ~(IXON | IXOFF | IXANY);
-	tty->c_cflag |= (CLOCAL | CREAD);
-	tty->c_cflag &= ~(PARENB | PARODD);
-	tty->c_cflag |= 0;
-	tty->c_cflag &= ~CSTOPB;
-	tty->c_cflag &= ~CRTSCTS;
 	if (tcsetattr(port, TCSANOW, tty))
 		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
 	return 0;
