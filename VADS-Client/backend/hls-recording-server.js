@@ -21,8 +21,8 @@ app.post('/start-recording', (req, res) => {
   recordingProcess = spawn('ffmpeg', [
     '-i', 'http://10.8.202.84:8888/stream/index.m3u8',
     '-c', 'copy',
-    '-t', '00:10:00', // Optional: set a max recording time
-    outputFilePath
+    outputFilePath,
+    '-t', '00:10:00' // Optional: set a max recording time
   ]);
 
   recordingProcess.on('close', (code) => {

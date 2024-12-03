@@ -11,9 +11,9 @@ export const VideoContainer: React.FC = () => {
       const video = videoContainerRef.current;
       if (Hls.isSupported()) {
         const hls = new Hls({
-          liveSyncDurationCount: 0.2,
-          maxLiveSyncPlaybackRate: 1.5,
-          lowLatencyMode: true,
+          // liveSyncDurationCount: 0.2,
+          // maxLiveSyncPlaybackRate: 1.5,
+          // lowLatencyMode: true,
         });
         hls.loadSource('http://10.8.202.84:8888/stream/index.m3u8');
         hls.attachMedia(video);
@@ -21,7 +21,6 @@ export const VideoContainer: React.FC = () => {
           video
             .play()
             .then(() => {
-              video.playbackRate = 2.0; // Setting the defualt playback speed to 2x
               setIsLiveStreamActive(true);
             })
             .catch(() => setIsLiveStreamActive(false));
