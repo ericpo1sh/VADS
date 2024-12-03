@@ -15,7 +15,7 @@ export const VideoContainer: React.FC = () => {
           maxLiveSyncPlaybackRate: 1.5,
           lowLatencyMode: true,
         });
-        hls.loadSource('http://108.253.217.48:8888/stream/index.m3u8');
+        hls.loadSource('http://10.8.202.84:8888/stream/index.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video
@@ -39,7 +39,6 @@ export const VideoContainer: React.FC = () => {
 
   return (
     <div className="flex">
-      {isLiveStreamActive ? (
         <video
           ref={videoContainerRef}
           controls
@@ -51,18 +50,7 @@ export const VideoContainer: React.FC = () => {
             objectFit: 'cover',
           }}
         />
-      ) : (
-        <img
-          src={liveStreamError}
-          alt="Live stream is not available"
-          style={{
-            border: '4px solid white',
-            width: '1504px',
-            height: '800px',
-            objectFit: 'cover',
-          }}
-        />
-      )}
+      
     </div>
   );
 };
