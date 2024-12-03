@@ -10,13 +10,20 @@ export const VideoContainer: React.FC = () => {
     if (videoContainerRef.current) {
       const video = videoContainerRef.current;
       if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource('http://10.8.202.38:8888/stream/index.m3u8');
+        const hls = new Hls({
+          liveSyncDurationCount: 0.2,
+          maxLiveSyncPlaybackRate: 1.5,
+          lowLatencyMode: true,
+        });
+        hls.loadSource('http://108.253.217.48:8888/stream/index.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video
             .play()
-            .then(() => setIsLiveStreamActive(true))
+            .then(() => {
+              video.playbackRate = 2.0; // Setting the defualt playback speed to 2x
+              setIsLiveStreamActive(true);
+            })
             .catch(() => setIsLiveStreamActive(false));
         });
         hls.on(Hls.Events.ERROR, () => setIsLiveStreamActive(false));
@@ -47,12 +54,12 @@ export const VideoContainer: React.FC = () => {
       ) : (
         <img
           src={liveStreamError}
-          alt="Live stream error"
+          alt="Live stream is not available"
           style={{
+            border: '4px solid white',
             width: '1504px',
             height: '800px',
             objectFit: 'cover',
-            border: '4px solid white',
           }}
         />
       )}
