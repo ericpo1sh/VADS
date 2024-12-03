@@ -4,9 +4,11 @@ const { spawn } = require('child_process');
 const path = require('path');
 const app = express();
 const port = 3001;
+const cors = require('cors');
+
 
 let recordingProcess = null;
-
+app.use(cors())
 app.use(express.json());
 
 app.post('/start-recording', (req, res) => {
