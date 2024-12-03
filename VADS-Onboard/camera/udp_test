@@ -1,0 +1,2 @@
+#!/bin/bash
+raspivid -w 1280 -h 720 -b 1000000 -fps 60 -t 0 -o udp://127.0.0.1:9000
