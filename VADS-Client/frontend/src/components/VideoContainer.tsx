@@ -15,7 +15,7 @@ export const VideoContainer: React.FC = () => {
           // maxLiveSyncPlaybackRate: 1.5,
           // lowLatencyMode: true,
         });
-        hls.loadSource('http://10.8.202.84:8888/stream/index.m3u8');
+        hls.loadSource('http://108.253.217.48:8888/stream/index.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video
