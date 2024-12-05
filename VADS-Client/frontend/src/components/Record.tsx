@@ -1,11 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export const Record: React.FC = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+
+    if (isRecording) {
+      timer = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    } else {
+      if (timer) {
+        clearInterval(timer);
+      }
+      setTime(0); // Reset timer when recording stops
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isRecording]);
+
   const startRecording = async () => {
     try {
       await fetch('http://localhost:3001/start-recording', {
         method: 'POST',
       });
+      setIsRecording(true);
       alert('Recording started');
     } catch (error) {
       alert('Failed to start recording');
@@ -17,10 +42,17 @@ export const Record: React.FC = () => {
       await fetch('http://localhost:3001/stop-recording', {
         method: 'POST',
       });
+      setIsRecording(false);
       alert('Recording stopped');
     } catch (error) {
       alert('Failed to stop recording');
     }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
 
   return (
@@ -31,7 +63,9 @@ export const Record: React.FC = () => {
       <button onClick={stopRecording} style={{ width: '75%', border: '2px solid #F00', borderRadius: '10px', height: '30%', backgroundColor: '#d9d9d9', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 10, cursor: 'pointer' }}>
         <p style={{ fontSize: '30px', fontFamily: 'Roboto Mono', fontWeight: 700 }}>STOP</p>
       </button>
-      <p className='recording-time' style={{ color: '#F00', fontSize: '24px', fontFamily: 'Roboto Mono', marginTop: '7px', fontWeight: 600 }}>00:00</p>
+      <p className='recording-time' style={{ color: '#F00', fontSize: '24px', fontFamily: 'Roboto Mono', marginTop: '7px', fontWeight: 600 }}>
+        {formatTime(time)}
+      </p>
     </div>
   );
 };

@@ -70,6 +70,23 @@ app.get('/recordings/:filename', (req, res) => {
   res.sendFile(filePath);
 });
 
+app.delete('/recordings/:filename', (req, res) => {
+  const filePath = path.join(__dirname, 'recordings', req.params.filename);
+
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error('Failed to delete file', err);
+      return res.status(500).send('Failed to delete recording');
+    }
+
+    res.send({ message: 'Recording deleted successfully' });
+  });
+});
+
+app.get('/ping', (req, res) => {
+  res.send('Server is active');
+});
+
 app.use('/recordings', express.static(path.join(__dirname, 'recordings')));
 
 app.listen(port, () => {
