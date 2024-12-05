@@ -188,7 +188,7 @@ export const Settings: React.FC = () => {
     <div style={{ width: '100%', border: '4px solid white', height: '80px', marginTop: '-3px', position: 'relative', backgroundColor: '#323232' }}>
       {/* Status Indicator */}
       <div style={{ display: 'flex', alignItems: 'center', marginRight: 'auto', marginLeft: '15px', marginTop: '23px' }}>
-        <span style={{ fontSize: '23px', color: 'white', marginRight: '10px', fontFamily: 'Roboto Mono' }}>Connection:</span>
+        <span style={{ fontSize: '23px', color: 'white', marginRight: '10px', fontFamily: 'Roboto Mono' }}>Drone Status:</span>
         <div
           style={{
             marginTop: '2px',

@@ -17,10 +17,13 @@ app.post('/start-recording', (req, res) => {
     return res.status(400).send('Recording already in progress.');
   }
 
-  const outputFilePath = path.join(__dirname, 'recordings', `recording_${Date.now()}.mp4`);
+  const today = new Date(Date.now());
+  const formattedDate = `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()}`;
+
+  const outputFilePath = path.join(__dirname, 'recordings', `recording_${formattedDate}.mp4`);
 
   recordingProcess = spawn('ffmpeg', [
-    '-i', 'http://108.253.217.48:8888/stream/index.m3u8',
+    '-i', 'http://10.8.203.1:8888/stream/index.m3u8',
     '-c', 'copy',
     '-f', 'mp4',
     '-movflags', 'frag_keyframe+empty_moov',
