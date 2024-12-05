@@ -8,7 +8,7 @@ function App() {
   return (
     <AuthProvider>
       <UserProvider>
-        <div style={{ backgroundColor: '#444444', height: '1026px', width: '1897px', borderRight: '4px solid white'}}>
+        <div style={{ backgroundColor: '#444444', height: '1080px', width: '1920px'}}>
           <div style={{ display: 'flex',  flexDirection: 'row'}}>
             <div>
               <VideoContainer />

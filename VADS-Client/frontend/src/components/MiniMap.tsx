@@ -13,8 +13,9 @@ export const MiniMap: React.FC<MiniMapProps> = ({ liveLatitude, liveLongitude })
   });
 
   const containerStyle = {
-    width: '380.5px',
-    height: '100%',
+    width: '400px',
+    height: '315px',
+    outline: '5px solid white'
   };
 
   const [center, setCenter] = useState({ lat: 36.15615459163338, lng: -95.99481697903099 });
@@ -48,7 +49,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({ liveLatitude, liveLongitude })
   }, [liveLatitude, liveLongitude]);
 
   return (
-    <div style={{ position: 'relative', height: '270px', marginBottom: '10px', marginLeft: '0px', borderLeft: '4px solid white', borderTop: '4px solid white' }}>
+    <div style={{ position: 'relative', marginBottom: '10px', borderLeft: '4px solid white', borderTop: '4px solid white' }}>
       {isLoaded ? (
         <>
           <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={16} options={mapOptions}/>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export const Recordings: React.FC = () => {
   const [recordings, setRecordings] = useState<{ name: string, path: string }[]>([]);
+  const [hoveredVideo, setHoveredVideo] = useState<number | null>(null);
   const [contextMenu, setContextMenu] = useState<{ visible: boolean, x: number, y: number, filename: string | null }>({
     visible: false,
     x: 0,
@@ -57,13 +58,18 @@ export const Recordings: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", backgroundColor: "#D9D9D9", width: "44.65%", height: "92%", borderRadius: "20px 0px 0px 20px", margin: "7px 0px 7px 12px", alignContent: "center", justifyContent: "space-around", alignItems: "center" }}>
+    <div style={{ display: "flex", flexDirection: "column", backgroundColor: "#D9D9D9", width: "44.65%", height: "95%", borderRadius: "20px 0px 0px 20px", margin: "7px 0px 7px 12px", alignContent: "center", justifyContent: "space-around", alignItems: "center" }}>
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        width: "98%",
-        height: "80%",
-        overflowY: "scroll",
+        gridAutoFlow: "column",
+        gridAutoColumns: "min-content",
+        width: "91%",
+        height: "90%",
+        overflowX: "scroll",
+        overflowY: "hidden",
+        gap: "30px",
+        padding: "10px",
+        marginTop: '25px'
       }}>
         {recordings.map((recording, index) => (
           <div key={index} style={{
@@ -72,22 +78,40 @@ export const Recordings: React.FC = () => {
             alignItems: "center",
             justifyContent: "center",
             position: "relative",
-            width: "100%",
-            height: "auto"
+            width: "auto",
+            height: "auto",
           }}>
+            {/* Video Element */}
             <video
               src={`http://localhost:3001${recording.path}`}
-              style={{ width: "220px", height: "120px", objectFit: "cover", borderRadius: "10px", border: "2px solid #ccc" }}
-              controls
+              style={{ width: "240px", height: "140px", objectFit: "cover", borderRadius: "10px", border: "2px solid #ccc", boxShadow: '4px 4px 8px 4px rgba(0, 0, 0, 0.1)' }}
+              controls={hoveredVideo === index}
               onContextMenu={(e) => handleRightClick(e, recording.name)}
-              onMouseOver={e => (e.currentTarget.play())}
-              onMouseOut={e => (e.currentTarget.pause())}
+              onMouseEnter={() => setHoveredVideo(index)}
+              onMouseLeave={() => setHoveredVideo(null)}
             />
+            {/* Play Button Overlay */}
+            {hoveredVideo !== index && (
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -100%)',
+                pointerEvents: 'none',
+              }}>
+                <img
+                  src="https://img.icons8.com/ios-glyphs/100/ffffff/play--v1.png" // Use a play button icon URL or SVG path
+                  alt="Play Button"
+                  style={{ width: "50px", height: "50px", opacity: 0.8 }}
+                />
+              </div>
+            )}
+            {/* Video Title */}
             <p style={{
               textAlign: "center",
               marginTop: "10px",
               fontFamily: "Roboto Mono",
-              fontSize: "16px",
+              fontSize: "20px",
               color: "#333",
               fontWeight: 600
             }}>

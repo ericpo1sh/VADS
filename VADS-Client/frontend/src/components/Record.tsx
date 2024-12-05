@@ -56,14 +56,42 @@ export const Record: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: 'column', backgroundColor: '#D9D9D9', width: '12%', height: '92%', margin: '7px 0px 7px 19px', borderRadius: '20px 20px 20px 20px', justifyContent: 'space-around', alignContent: 'center', alignItems: 'center' }}>
-      <button onClick={startRecording} style={{ width: '75%', border: '2px solid #098800', borderRadius: '10px', height: '30%', backgroundColor: '#d9d9d9', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 20, cursor: 'pointer' }}>
+    <div style={{ display: "flex", flexDirection: 'column', backgroundColor: '#D9D9D9', width: '12%', height: '95%', margin: '7px 0px 7px 19px', borderRadius: '20px', justifyContent: 'space-around', alignContent: 'center', alignItems: 'center' }}>
+      <button
+        onClick={startRecording}
+        style={{
+          width: '75%',
+          border: `solid ${isRecording ? '2px' : '4px'} #098800`,
+          borderRadius: '10px',
+          height: '30%',
+          backgroundColor: '#d9d9d9',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 25,
+          cursor: 'pointer'
+        }}
+      >
         <p style={{ fontSize: '30px', fontFamily: 'Roboto Mono', fontWeight: 700 }}>START</p>
       </button>
-      <button onClick={stopRecording} style={{ width: '75%', border: '2px solid #F00', borderRadius: '10px', height: '30%', backgroundColor: '#d9d9d9', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 10, cursor: 'pointer' }}>
+      <button
+        onClick={stopRecording}
+        style={{
+          width: '75%',
+          border: `solid ${isRecording ? '4px' : '2px'} #F00`,
+          borderRadius: '10px',
+          height: '30%',
+          backgroundColor: '#d9d9d9',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 15,
+          cursor: 'pointer'
+        }}
+      >
         <p style={{ fontSize: '30px', fontFamily: 'Roboto Mono', fontWeight: 700 }}>STOP</p>
       </button>
-      <p className='recording-time' style={{ color: '#F00', fontSize: '24px', fontFamily: 'Roboto Mono', marginTop: '7px', fontWeight: 600 }}>
+      <p className='recording-time' style={{ color: '#F00', fontSize: '24px', fontFamily: 'Roboto Mono', marginTop: '10px', fontWeight: 600 }}>
         {formatTime(time)}
       </p>
     </div>

@@ -3,13 +3,13 @@ import '@fontsource/roboto-mono';
 
 export const Gauges: React.FC = () => {
   return (
-    <div style={{ border: '4px white solid', width: '380px', height: '665px', marginTop: '-10px' }}>
-      <div id="gauge-1" style={{ width: '80%', border: '#098800 2px solid', height: '120px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', marginLeft: '35px' }}>
+    <div style={{ border: '4px white solid', width: '400px', height: '665px', marginTop: '-7px' }}>
+      <div id="gauge-1" style={{ width: '80%', border: '#098800 2px solid', height: '120px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', marginLeft: '40px' }}>
         <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>COORDINATES</p>
         <hr style={{ border: '#098800 1px solid', width: '100%' }} />
         <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>36.15626, -95.99477</p>
       </div>
-      <div id='guage-grid' style={{ display: 'grid', width: '90%', gridTemplateColumns: 'repeat(2, 1fr)', marginLeft: '40px' }}>
+      <div id='guage-grid' style={{ display: 'grid', width: '90%', gridTemplateColumns: 'repeat(2, 1fr)', marginLeft: '45px' }}>
         <div id="gauge-2" style={{ width: '70%', border: '#8414D9 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>SPEED</p>
           <hr style={{ border: '#8414D9 1px solid', width: '100%' }} />

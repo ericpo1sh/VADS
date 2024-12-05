@@ -20,7 +20,7 @@ export const BottomBar: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: '215px', border: '4px white solid', marginTop: '-5px' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', height: '264px', border: '4px white solid', marginTop: '-4px' }}>
       <Account />
       <Record />
       <BottomBarMenu setActiveComponent={setActiveComponent} activeComponent={activeComponent} />

@@ -205,7 +205,7 @@ export const Settings: React.FC = () => {
         </svg>
       </button>
       {isSettingsOpen && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', top: '-668px', right: '0px', width: '380px', height: '660px', backgroundColor: '#323232', zIndex: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', top: '-668px', right: '0px', width: '400px', height: '660px', backgroundColor: '#323232', zIndex: 10 }}>
           {/* Content inside the settings container */}
           <p style={{ color: 'white', padding: '0px', fontFamily: 'Roboto Mono', fontSize: '25px' }}>Settings</p>
 
