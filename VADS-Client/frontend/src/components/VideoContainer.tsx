@@ -10,13 +10,19 @@ export const VideoContainer: React.FC = () => {
     if (videoContainerRef.current) {
       const video = videoContainerRef.current;
       if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource('http://10.8.202.38:8888/stream/index.m3u8');
+        const hls = new Hls({
+          // liveSyncDurationCount: 0.2,
+          // maxLiveSyncPlaybackRate: 1.5,
+          // lowLatencyMode: true,
+        });
+        hls.loadSource('http://10.8.202.84:8888/stream/index.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video
             .play()
-            .then(() => setIsLiveStreamActive(true))
+            .then(() => {
+              setIsLiveStreamActive(true);
+            })
             .catch(() => setIsLiveStreamActive(false));
         });
         hls.on(Hls.Events.ERROR, () => setIsLiveStreamActive(false));
@@ -32,7 +38,6 @@ export const VideoContainer: React.FC = () => {
 
   return (
     <div className="flex">
-      {isLiveStreamActive ? (
         <video
           ref={videoContainerRef}
           controls
@@ -44,18 +49,7 @@ export const VideoContainer: React.FC = () => {
             objectFit: 'cover',
           }}
         />
-      ) : (
-        <img
-          src={liveStreamError}
-          alt="Live stream error"
-          style={{
-            width: '1504px',
-            height: '800px',
-            objectFit: 'cover',
-            border: '4px solid white',
-          }}
-        />
-      )}
+      
     </div>
   );
 };
