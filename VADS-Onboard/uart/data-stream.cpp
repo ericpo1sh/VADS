@@ -12,12 +12,12 @@
 #include <unistd.h>
 #include <vector>
 
-#include "Common/MS5611.h"
-#include "Common/Ublox.h"
-#include "Common/Util.h"
+#include <Common/MS5611.h>
+#include <Common/Ublox.h>
+#include <Common/Util.h>
 
-#include "Navio2/PWM.h"
-#include "Navio2/RCOutput_Navio2.h"
+#include <Navio2/PWM.h>
+#include <Navio2/RCOutput_Navio2.h>
 
 #define UART_DEV "/dev/ttyAMA0"
 
