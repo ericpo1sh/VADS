@@ -48,7 +48,6 @@ typedef struct live_data_s {
 typedef struct termios termios_t;
 
 static int tty_config(termios_t *tty, int port);
-static void signal_SIGINT(int sig);
 
 static void read_MS5611(ldat *dat);
 static void update_gps(ldat *dat);
@@ -68,7 +67,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	ldat dat;
 
 	if (argc != 2)
-		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)");
+		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)\n");
 	uart_fd = open(argv[1], O_RDWR | O_NOCTTY);
 	if (uart_fd < 0)
 		return fprintf(stderr, "open error - %i: %s\n", errno, strerror(errno)), 1;
@@ -78,12 +77,13 @@ int main(int argc __attribute__((unused)), char **argv) {
 	if (tty_config(&tty, uart_fd))
 		return tcsetattr(uart_fd, TCSANOW, &save), 1;
 	usleep(1000);
-	signal(SIGINT, signal_SIGINT);
 	while (sending) {
 		read_MS5611(&dat);
 		update_gps(&dat);
 		update_stemp(&dat);
 		memcpy(input, &dat, sizeof(ldat));
+		puts("made it");
+		std::cout << input << std::endl;
 		write(uart_fd, input, 28);
 		// usleep(28 * 100);
 		// std::cout << "SENDING: " << input;
@@ -121,12 +121,6 @@ static int tty_config(termios_t *tty, int port) {
 	return 0;
 }
 
-/**
- * signal_SIGINT - defines instructions upon SIGINT, as input to signal
- * @sig: input signal
- */
-static void signal_SIGINT(int sig __attribute__((unused))) { sending = false; }
-
 static void read_MS5611(ldat *dat) {
 	static MS5611 barometer;
 	static int config{0};
@@ -151,9 +145,10 @@ static void update_gps(ldat *dat) {
 
 	if (!config && !gps.configureSolutionRate(1000))
 		std::cerr << "Failed to set GPS rate: EXITING" << std::endl, exit(1);
-	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position))
+	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		(*dat).latitude = position[2]/10000000;
 		(*dat).longitude = position[1]/10000000;
+	}
 	usleep(200);
 }
 
