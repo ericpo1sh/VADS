@@ -152,8 +152,8 @@ static void update_gps(ldat *dat) {
 	if (!config && !gps.configureSolutionRate(1000))
 		std::cerr << "Failed to set GPS rate: EXITING" << std::endl, exit(1);
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position))
-		dat->latitude = position[2]/10000000;
-		dat->longitude = position[1]/10000000;
+		(*dat).latitude = position[2]/10000000;
+		(*dat).longitude = position[1]/10000000;
 	usleep(200);
 }
 
