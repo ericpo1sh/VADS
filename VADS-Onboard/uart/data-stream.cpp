@@ -83,7 +83,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 		update_stemp(&dat);
 		memcpy(input, &dat, sizeof(ldat));
 		puts("made it");
-		std::cout << input << std::endl;
+		// std::cout << input << std::endl;
 		write(uart_fd, input, 28);
 		// usleep(28 * 100);
 		// std::cout << "SENDING: " << input;
@@ -130,12 +130,14 @@ static void read_MS5611(ldat *dat) {
 	barometer.refreshPressure();
 	usleep(10000);
 	barometer.readPressure();
-	(*dat).pressure = barometer.getPressure();
 	barometer.refreshTemperature();
 	usleep(10000);
 	barometer.readTemperature();
-	(*dat).temperature = barometer.getTemperature();
 	barometer.calculatePressureAndTemperature();
+	(*dat).pressure = barometer.getPressure();
+	(*dat).temperature = barometer.getTemperature();
+	printf("TEMP : %f\n", (*dat).temperature);
+	printf("PRESS: %f\n", (*dat).pressure);
 }
 
 static void update_gps(ldat *dat) {
@@ -147,7 +149,9 @@ static void update_gps(ldat *dat) {
 		std::cerr << "Failed to set GPS rate: EXITING" << std::endl, exit(1);
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		(*dat).latitude = position[2]/10000000;
+		printf("LAT  : %lf\n", (*dat).latitude);
 		(*dat).longitude = position[1]/10000000;
+		printf("LONG : %lf\n", (*dat).latitude);
 	}
 	usleep(200);
 }
@@ -158,4 +162,5 @@ static void update_stemp(ldat *dat) {
 	stemp_file.open("/sys/class/thermal/thermal_zone0/temp");
 	stemp_file >> (*dat).stemp;
 	(*dat).stemp /= 1000;
+	printf("STEMP: %f\n", (*dat).stemp);
 }
