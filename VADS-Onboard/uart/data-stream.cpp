@@ -157,10 +157,12 @@ static void update_gps(ldat *dat) {
 }
 
 static void update_stemp(ldat *dat) {
-	static std::ifstream stemp_file;
+	static int stemp_file;
+	char stemp[7]{0};
 
-	stemp_file.open("/sys/class/thermal/thermal_zone0/temp");
-	stemp_file >> (*dat).stemp;
+	open("/sys/class/thermal/thermal_zone0/temp", O_RDONLY);
+	read(stemp_file, stemp, 6);
+	(*dat).stemp = std::atof(stemp);
 	(*dat).stemp /= 1000;
 	printf("STEMP: %f\n", (*dat).stemp);
 }
