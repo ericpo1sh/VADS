@@ -9,23 +9,22 @@
 #include <memory>
 #include <sstream>
 #include <sys/file.h>
+#include <sys/time.h>
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+
+#include "AHRS.hpp"
 
 #include "Common/MS5611.h"
 #include "Common/Ublox.h"
 #include "Common/Util.h"
 
 // #include "Navio2/PWM.h"
+#include "Navio2/LSM9DS1.h"
 #include "Navio2/RCOutput_Navio2.h"
 
 #define UART_DEV "/dev/ttyAMA0"
-
-#define SERVO_MIN 1250 // mS
-#define SERVO_MAX 1750 // mS
-
-#define PWM_OUTPUT 0
 
 // struct termios {
 //     tcflag_t c_iflag;	/* input mode flags */
@@ -44,6 +43,9 @@ typedef struct live_data_s {
 	double latitude;
 	double longitude;
 	float stemp;
+	float pitch;
+	float yaw;
+	float roll;
 } ldat;
 
 typedef struct termios termios_t;
@@ -53,6 +55,8 @@ static int tty_config(termios_t *tty, int port);
 static void read_MS5611(ldat *dat);
 static void update_gps(ldat *dat);
 static void update_stemp(ldat *dat);
+static void update_ahrs(ldat *dat);
+static void imu_update(AHRS *ahrs, ldat *dat);
 
 volatile bool sending = true;
 
@@ -64,7 +68,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	std::size_t input_len{0};
 	int prompt_ret{0}, uart_fd{-1};
 	termios_t tty, save;
-	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f };
+	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f, 0.f, 0.f, 0.f };
 	std::stringstream out;
 
 	if (argc != 2)
@@ -83,11 +87,16 @@ int main(int argc __attribute__((unused)), char **argv) {
 		read_MS5611(&dat);
 		update_gps(&dat);
 		update_stemp(&dat);
+		update_ahrs(&dat);
 		out << "{\"temperature\": \"" << dat.temperature
 			<< "\", \"pressure\": \"" << dat.pressure
 			<< "\", \"latitude\": \"" << dat.latitude
 			<< "\", \"longitude\": \"" << dat.longitude
-			<< "\", \"stemp\": \"" << dat.stemp << "\"}";
+			<< "\", \"stemp\": \"" << dat.stemp 
+			<< "\", \"pitch\": \"" << dat.pitch
+			<< "\", \"yaw\": \"" << dat.yaw
+			<< "\", \"roll\": \"" << dat.roll
+			<< "\"}";
 		std::cout << out.str() << std::endl;
 		// std::cout << out.str().c_str() << std::endl;
 		// std::cout << input << std::endl;
@@ -135,7 +144,7 @@ static void read_MS5611(ldat *dat) {
 	static int config{0};
 
 	if (!config)
-		barometer.initialize();
+		barometer.initialize(), config = 1;
 	barometer.refreshPressure();
 	usleep(10000);
 	barometer.readPressure();
@@ -176,4 +185,50 @@ static void update_stemp(ldat *dat) {
 	(*dat).stemp = std::stof(buff.str());
 	(*dat).stemp /= 1000;
 	std::cout << "STEMP: " << (*dat).stemp << "C\n";
+}
+
+static void update_ahrs(ldat *dat) {
+	static std::unique_ptr <AHRS> ahrs;
+	static std::unique_ptr <InertialSensor> imu;
+	int config{0};
+
+	if (!config) {
+		imu = std::unique_ptr <InertialSensor> { new LSM9DS1() };
+		ahrs = std::unique_ptr <AHRS> { new AHRS(move(imu)) };
+		config = 1;
+	}
+	ahrs->setGyroOffset();
+	imu_update(ahrs.get(), dat);
+}
+
+static void imu_update(AHRS *ahrs, ldat *dat) {
+	float roll, pitch, yaw, dt;
+	struct timeval tv;
+	static float maxdt, mindt = 0.01, dtsumm = 0;
+	static int is_first = 1;
+	static unsigned long previoustime, currenttime;
+
+	gettimeofday(&tv, nullptr);
+	previoustime = currenttime;
+	currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
+	dt = (currenttime - previoustime) / 1000000.0;
+	if (dt < 1 / 1300.0)
+		usleep((1 / 1300.0 - dt) * 1000000);
+	gettimeofday(&tv, nullptr);
+	currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
+	dt = (currenttime - previoustime) / 1000000.0;
+	ahrs->updateIMU(dt);
+	ahrs->getEuler(&roll, &pitch, &yaw);
+	if (!is_first) {
+		if (dt > maxdt) maxdt = dt;
+		if (dt < mindt) mindt = dt;
+	}
+	is_first = 0;
+	dtsumm += dt;
+	if (dtsumm > 0.05) {
+		(*dat).pitch = pitch;
+		(*dat).yaw = yaw * -1;
+		(*dat).roll = roll;
+		dtsumm = 0;
+	}
 }
