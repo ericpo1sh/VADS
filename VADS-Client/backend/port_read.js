@@ -11,7 +11,13 @@ const port = new Serialport("/dev/ttyUSB0", {
 const parser = new Readline();
 port.pipe(parser);
 
-//Writing data to console
+//Data to JSON for calling in Components
 parser.on('data', (data) => {
-    console.log(data);
+    try {
+        const flightData = JSON.parse(data);
+        console.log("Converted Parsed line to JSON");
+    }
+    catch (error) {
+        console.log(error);
+    }
 });
