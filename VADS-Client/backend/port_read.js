@@ -21,3 +21,19 @@ parser.on('data', (data) => {
         console.log(error);
     }
 });
+
+var velocity = 0
+var acX = flightData.ax;
+var acy = flightData.ay;
+velocity = calcSpeed(velocity, acx, acY);
+
+//This Function is to get the velocity of the drone from the acceleration
+//prevVel is the previous velocity, should start at 0
+//acX is acceleration in X-axis, acY is for the Y-axis
+function calcSpeed(prevVel, acX, acY) {
+    //acV is the acceleration Vector got through pythagoras
+    var accV = Math.sqrt(Math.pow(acX, 2) + Math.pow(acY, 2));
+    //newVel is the calculated absolute value of prevVel plus acV times our data refresh interval
+    var newVel = Math.abs((prevVel + (acV * 2)));
+    return newVel;
+}
