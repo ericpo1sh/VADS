@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <sys/file.h>
 #include <termios.h>
 #include <unistd.h>
@@ -60,11 +61,11 @@ volatile bool sending = true;
  * Return: 0, always
  */
 int main(int argc __attribute__((unused)), char **argv) {
-	uint8_t input[28] = {0};
 	std::size_t input_len{0};
 	int prompt_ret{0}, uart_fd{-1};
 	termios_t tty, save;
-	ldat dat;
+	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f };
+	std::stringstream out;
 
 	if (argc != 2)
 		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)\n");
@@ -78,16 +79,24 @@ int main(int argc __attribute__((unused)), char **argv) {
 		return tcsetattr(uart_fd, TCSANOW, &save), 1;
 	usleep(1000);
 	while (sending) {
+		out.str(std::string());
 		read_MS5611(&dat);
 		update_gps(&dat);
 		update_stemp(&dat);
-		memcpy(input, &dat, sizeof(ldat));
-		puts("made it");
+		out << "{\"temperature\": \"" << dat.temperature
+			<< "\", \"pressure\": \"" << dat.pressure
+			<< "\", \"latitude\": \"" << dat.latitude
+			<< "\", \"longitude\": \"" << dat.longitude
+			<< "\", \"stemp\": \"" << dat.stemp << "\"}";
+		std::cout << out.str() << std::endl;
+		// std::cout << out.str().c_str() << std::endl;
 		// std::cout << input << std::endl;
-		write(uart_fd, input, 28);
+		write(uart_fd, out.str().c_str(), strlen(out.str().c_str()));
+		// printf("LENGTH OF OUTPUT: %u\n", strlen(out.str().c_str()));
 		// usleep(28 * 100);
 		// std::cout << "SENDING: " << input;
-		fflush(stdout);
+		// fflush(stdout);
+		sleep(2);
 	}
 	tcsetattr(uart_fd, TCSANOW, &save);
 	close(uart_fd);
@@ -148,21 +157,23 @@ static void update_gps(ldat *dat) {
 	if (!config && !gps.configureSolutionRate(1000))
 		std::cerr << "Failed to set GPS rate: EXITING" << std::endl, exit(1);
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
-		(*dat).latitude = position[2]/10000000;
+		if (position[2])
+			(*dat).latitude = position[2]/10000000;
 		printf("LAT  : %lf\n", (*dat).latitude);
-		(*dat).longitude = position[1]/10000000;
-		printf("LONG : %lf\n", (*dat).latitude);
+		if (position[1])
+			(*dat).longitude = position[1]/10000000;
+		printf("LONG : %lf\n", (*dat).longitude);
 	}
 	usleep(200);
 }
 
 static void update_stemp(ldat *dat) {
-	static int stemp_file;
-	char stemp[7]{0};
+	std::ifstream stemp_file("/sys/class/thermal/thermal_zone0/temp");
+	std::stringstream buff;
 
-	open("/sys/class/thermal/thermal_zone0/temp", O_RDONLY);
-	read(stemp_file, stemp, 6);
-	(*dat).stemp = std::atof(stemp);
+	buff << stemp_file.rdbuf();
+	stemp_file.close();
+	(*dat).stemp = std::stof(buff.str());
 	(*dat).stemp /= 1000;
-	printf("STEMP: %f\n", (*dat).stemp);
+	std::cout << "STEMP: " << (*dat).stemp << "C\n";
 }
