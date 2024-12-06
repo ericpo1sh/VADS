@@ -1,4 +1,3 @@
-#include <csignal>
 #include <cstdio>
 #include <cstring>
 #include <errno.h>
@@ -24,7 +23,6 @@
 typedef struct termios termios_t;
 
 static int tty_config(termios_t *tty, int port);
-static void signal_SIGINT(int sig __attribute__((unused)));
 
 volatile bool receiving = true;
 
@@ -48,7 +46,6 @@ int main(int argc __attribute__((unused)), char **argv) {
 	if (tty_config(&tty, uart_fd))
 		return tcsetattr(uart_fd, TCSANOW, &save), 1;
 	usleep(1000);
-	signal(SIGINT, signal_SIGINT);
 	while(receiving) {
 		for (index = 0; (read_len = read(uart_fd, &read_char, 1)); ++index)
 			buffer[index] = read_char;
@@ -89,9 +86,3 @@ static int tty_config(termios_t *tty, int port) {
 		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
 	return 0;
 }
-
-/**
- * signal_SIGINT - defines instructions upon SIGINT, as input to signal
- * @sig: input signal
- */
-static void signal_SIGINT(int sig __attribute__((unused))) { receiving = false; }
