@@ -50,7 +50,9 @@ typedef struct termios termios_t;
 static int tty_config(termios_t *tty, int port);
 static void signal_SIGINT(int sig);
 
-static void temp_pressure_get(MS5611 *barometer);
+static void read_MS5611(ldat *dat);
+static void update_gps(ldat *dat);
+static void update_stemp(ldat *dat);
 
 volatile bool sending = true;
 
