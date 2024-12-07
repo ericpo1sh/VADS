@@ -97,12 +97,12 @@ int main(int argc __attribute__((unused)), char **argv) {
 		std::cout << out.str() << std::endl;
 		// std::cout << out.str().c_str() << std::endl;
 		// std::cout << input << std::endl;
-		write(uart_fd, out.str().c_str(), strlen(out.str().c_str()));
+		write(uart_fd, out.str().c_str(), out.str().length());
 		// printf("LENGTH OF OUTPUT: %u\n", strlen(out.str().c_str()));
 		// usleep(28 * 100);
 		// std::cout << "SENDING: " << input;
 		// fflush(stdout);
-		sleep(2);
+		// sleep(1);
 	}
 	tcsetattr(uart_fd, TCSANOW, &save);
 	close(uart_fd);
@@ -151,8 +151,6 @@ static void read_MS5611(ldat *dat) {
 	barometer.calculatePressureAndTemperature();
 	(*dat).pressure = barometer.getPressure();
 	(*dat).temperature = barometer.getTemperature();
-	printf("TEMP : %f\n", (*dat).temperature);
-	printf("PRESS: %f\n", (*dat).pressure);
 }
 
 static void update_gps(ldat *dat) {
@@ -165,10 +163,8 @@ static void update_gps(ldat *dat) {
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		if (position[2])
 			(*dat).latitude = position[2]/10000000;
-		printf("LAT  : %lf\n", (*dat).latitude);
 		if (position[1])
 			(*dat).longitude = position[1]/10000000;
-		printf("LONG : %lf\n", (*dat).longitude);
 	}
 	usleep(200);
 }
@@ -181,7 +177,6 @@ static void update_stemp(ldat *dat) {
 	stemp_file.close();
 	(*dat).stemp = std::stof(buff.str());
 	(*dat).stemp /= 1000;
-	std::cout << "STEMP: " << (*dat).stemp << "C\n";
 }
 
 static void update_ahrs(ldat *dat) {
