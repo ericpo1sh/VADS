@@ -163,7 +163,7 @@ static void update_gps(ldat *dat) {
 	static std::vector<double> position;
 	int config{0};
 
-	if (!config && !gps.configureSolutionRate(1000))
+	if (!config && gps.configureSolutionRate(1000))
 		std::cerr << "Failed to set GPS rate: EXITING" << std::endl, exit(1);
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		if (position[2])
@@ -195,9 +195,9 @@ static void update_ahrs(ldat *dat) {
 	if (!config) {
 		imu = std::unique_ptr <InertialSensor> { new LSM9DS1() };
 		ahrs = std::unique_ptr <AHRS> { new AHRS(move(imu)) };
+		ahrs->setGyroOffset();
 		config = 1;
 	}
-	ahrs->setGyroOffset();
 	imu_update(ahrs.get(), dat);
 }
 
