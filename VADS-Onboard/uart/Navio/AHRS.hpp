@@ -1,10 +1,8 @@
-/*
-Mahony AHRS algorithm implemented by Madgwick
-See: http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/
-
-Adapted by Igor Vereninov (igor.vereninov@emlid.com)
-Provided to you by Emlid Ltd (c) 2014.
-twitter.com/emlidtech || www.emlid.com || info@emlid.com
+/**
+ * Mahony AHRS algorithm implemented by Madgwick
+ * See: http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/
+ *
+ * Adapted from adaptation of Igor Vereninov (igor.vereninov@emlid.com)
 */
 
 #ifndef AHRS_HPP
@@ -38,15 +36,4 @@ public:
     float getZ();
 };
 
-class Socket {
-public:
-    Socket(char *ip, char *port);
-    Socket();
-    void output(float W, float X, float Y, float Z, int Hz);
-private:
-    int sockfd;
-	struct sockaddr_in servaddr = {0};
-	char sendline[80];
-};
-
-#endif // AHRS_hpp
+#endif

@@ -20,7 +20,6 @@
 #include "Common/Ublox.h"
 #include "Common/Util.h"
 
-// #include "Navio2/PWM.h"
 #include "Navio2/LSM9DS1.h"
 #include "Navio2/RCOutput_Navio2.h"
 
@@ -71,9 +70,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f, 0.f, 0.f, 0.f };
 	std::stringstream out;
 
-	if (argc != 2)
-		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)\n");
-	uart_fd = open(argv[1], O_RDWR | O_NOCTTY);
+	uart_fd = open(argv[1] ? argv[1] : UART_DEV, O_RDWR | O_NOCTTY);
 	if (uart_fd < 0)
 		return fprintf(stderr, "open error - %i: %s\n", errno, strerror(errno)), 1;
 	if (tcgetattr(uart_fd, &tty))
