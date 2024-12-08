@@ -1,0 +1,42 @@
+var termios = require('termios'), data = '';
+const fs = require('node:fs');
+const { waitForDebugger } = require('node:inspector');
+
+function createSerial(){
+    var tty, old;
+    var recieve = TRUE;
+    var file = "/dev/ttyUSB0";
+
+    fs.open(file, 'r', (err, uartFD) => {
+        if (err) {
+            console.log(err);
+            return -1;
+        }
+        console.log("File is open");
+        tty = termios.getattr(uartFd);
+        old = tty;
+        try {
+            termios.setattr(uartFD, {cflag: {CSIZE: CS8}});
+            termios.setattr(uartFD, {cflags: {CLOCAL: TRUE}});
+            termios.setattr(uartFD, {cflags: {CREAD: TRUE}});
+            termios.setattr(uartFD, {cflags: {PARENB: FALSE}});
+            termios.setattr(uartFD, {cflags: {PARODD: FALSE}});
+            termios.setattr(uartFD, {cflags: {CSTOPB: FALSE}});
+            termios.setattr(uartFD, {cflags: {PARODD: FALSE}});
+            termios.setattr(uartFD, {iflags: {IGNBRK: FALSE}});
+            termios.setattr(uartFD, {iflags: {IXOFF: FALSE}});
+            termios.setattr(uartFD, {iflags: {IXON: FALSE}});
+            termios.setattr(uartFD, {iflags: {IXANY: FALSE}});
+        }
+        catch (err) {
+            console.error(err);
+            return -1;
+        }
+        while (recieve) {
+            const index = 0;
+            fs.watch(file, (eventType, fileName) => {
+                if (eventType == Updated) {
+                    fs.read(uartFD, 0,0, )
+                }
+            })}
+}})
