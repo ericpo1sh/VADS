@@ -8,6 +8,7 @@ Virtual Aerial Drone Systems (VADS) is an open-source desktop application for re
 |----------|----------------:|
 |VADS-Client| Repo for handling the Front and Back end of the Electron App|
 |VADS-Onboard| Repo for code written for the Raspberry pi and Navio 2 Flight Controller|
+|VADS-VR| Repo for handling Virtual Reality C# application, designed for a Meta Quest 2|
 
 ## Authors / Contact info
 * **Sammy Ansari** **|** [Github](https://github.com/O-01) **|** [LinkedIn](https://linkedin.com/in/sammy-ansari) **|**
