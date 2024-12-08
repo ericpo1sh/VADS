@@ -23,7 +23,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         clientWebSocket = new ClientWebSocket();
         try
         {
-            await clientWebSocket.ConnectAsync(new System.Uri("ws://192.168.1.118:8765"), CancellationToken.None);
+            await clientWebSocket.ConnectAsync(new System.Uri("ws://"), CancellationToken.None);
             Debug.Log("WebSocket connected!");
             clientMessage = "Connection made.";
             SendMessage();
