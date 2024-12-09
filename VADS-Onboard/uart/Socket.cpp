@@ -4,7 +4,6 @@
 #include <string>
 #include <sys/socket.h>
 
-#include "data_stream.cpp"
 #include "Socket.hpp"
 
 Socket::Socket(char * ip,char * port) {
