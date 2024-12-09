@@ -32,7 +32,7 @@ try {
   });
 
   // Set up the parser and pipe data into it
-  const parser = serialPort.pipe(new DelimiterParser({ delimiter: '\n' }));
+  const parser = serialPort.pipe(new ReadlineParser());
 
   let flightData = {};
 

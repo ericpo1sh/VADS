@@ -6,38 +6,46 @@ export const VideoContainer: React.FC = () => {
   const videoContainerRef = useRef<HTMLVideoElement>(null);
   const [isLiveStreamActive, setIsLiveStreamActive] = useState(false);
 
-  useEffect(() => {
-    if (videoContainerRef.current) {
+  const checkLiveStream = () => {
+    if (Hls.isSupported() && videoContainerRef.current) {
       const video = videoContainerRef.current;
-      if (Hls.isSupported()) {
-        const hls = new Hls({
-          // liveSyncDurationCount: 0.2,
-          // maxLiveSyncPlaybackRate: 1.5,
-          // lowLatencyMode: true,
-        });
-        hls.loadSource('http://10.8.203.1:8888/stream/index.m3u8');
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video
-            .play()
-            .then(() => {
-              setIsLiveStreamActive(true);
-            })
-            .catch(() => setIsLiveStreamActive(false));
-        });
-        hls.on(Hls.Events.ERROR, () => setIsLiveStreamActive(false));
+      const hls = new Hls({
+        liveSyncDurationCount: 0.2,
+        lowLatencyMode: true,
+      });
 
-        return () => {
-          hls.destroy();
-        };
-      } else {
+      hls.loadSource('http://192.168.94.143:8888/stream/index.m3u8');
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video
+          .play()
+          .then(() => setIsLiveStreamActive(true))
+          .catch(() => setIsLiveStreamActive(false));
+      });
+
+      hls.on(Hls.Events.ERROR, () => {
         setIsLiveStreamActive(false);
-      }
+        hls.destroy();
+      });
+
+      return () => {
+        hls.destroy();
+      };
+    } else {
+      setIsLiveStreamActive(false);
     }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(checkLiveStream, 5000);
+    checkLiveStream();
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex">
+      {isLiveStreamActive ? (
         <video
           ref={videoContainerRef}
           controls
@@ -49,7 +57,18 @@ export const VideoContainer: React.FC = () => {
             objectFit: 'cover',
           }}
         />
-      
+      ) : (
+        <img
+          src={liveStreamError}
+          alt="Stream Not Available"
+          style={{
+            border: '4px solid white',
+            width: '1504px',
+            height: '800px',
+            objectFit: 'cover',
+          }}
+        />
+      )}
     </div>
   );
 };
