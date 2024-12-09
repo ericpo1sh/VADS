@@ -20,6 +20,10 @@ Socket::Socket() {
 	addr.sin_port = htons(1337);
 }
 
-void Socket::output(const std::string& data) {
+void Socket::send(const std::string data) {
 	sendto(sockfd, data.c_str(), data.length(), 0, (struct sockaddr *)&addr, sizeof(addr));
+}
+
+void Socket::receive(char *buff) {
+	recv(sockfd, buff, 384, MSG_WAITALL);
 }
