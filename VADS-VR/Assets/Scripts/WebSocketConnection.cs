@@ -2,10 +2,12 @@ using System;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using TMPro;
 
 [RequireComponent(typeof(InputData))]
 public class NewMonoBehaviourScript : MonoBehaviour
@@ -13,11 +15,17 @@ public class NewMonoBehaviourScript : MonoBehaviour
     private ClientWebSocket clientWebSocket;
     private InputData _inputData;
     private string clientMessage = "";
-    private string serverMessage = "";
+
+    private bool prevLeftGripState = false;
+    private bool prevRightTriggerState = false;
 
     private float velocity = 0;
+
+    public TextMeshProUGUI speedText;
+    public TextMeshProUGUI altitudeText;
     async void Start()
     {
+        // Getting VR raw data
         _inputData = GetComponent<InputData>();
 
         clientWebSocket = new ClientWebSocket();
@@ -26,7 +34,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
             await clientWebSocket.ConnectAsync(new System.Uri("ws://"), CancellationToken.None);
             Debug.Log("WebSocket connected!");
             clientMessage = "Connection made.";
-            SendMessage();
+            await SendMessage();
             ReceiveMessages();
         }
         catch (Exception e)
@@ -42,32 +50,26 @@ public class NewMonoBehaviourScript : MonoBehaviour
         {
             if (_inputData._leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool leftGripPressed))
             {
-                if (leftGripPressed)
+                if (leftGripPressed != prevLeftGripState)
                 {
-                    clientMessage = "Left grip button pushed";
-                    SendMessage();
-                }
-                else
-                {
-                    clientMessage = "";
+                    clientMessage = leftGripPressed ? "LeftGrip_ON" : "LeftGrip_OFF";
+                    await SendMessage();
+                    prevLeftGripState = leftGripPressed;
                 }
             }
 
             if (_inputData._rightController.TryGetFeatureValue(CommonUsages.triggerButton, out bool rightTriggerPressed))
             {
-                if (rightTriggerPressed)
+                if (rightTriggerPressed != prevRightTriggerState)
                 {
-                    clientMessage = "Right trigger button pushed";
-                    SendMessage();
-                }
-                else
-                {
-                    clientMessage = "";
+                    clientMessage = rightTriggerPressed ? "RightTrigger_ON" : "RightTrigger_OFF";
+                    await SendMessage();
+                    prevRightTriggerState = rightTriggerPressed;
                 }
             }
         }
     }
-    async void SendMessage()
+    async Task SendMessage()
     {
         byte[] data = Encoding.UTF8.GetBytes(clientMessage);
         await clientWebSocket.SendAsync(new ArraySegment<byte>(data), WebSocketMessageType.Text, true, CancellationToken.None);
@@ -92,10 +94,12 @@ public class NewMonoBehaviourScript : MonoBehaviour
                 // Calculating drone speed
                 var acV = Math.Sqrt(Math.Pow(flightData.ax, 2) + Math.Pow(flightData.ay, 2));
                 var newVel = Math.Abs(velocity + (acV * 2));
+                var droneSpeed = Math.Round(newVel, 0, MidpointRounding.AwayFromZero);
 
                 // Testing JSON data
-                Debug.Log($"Acc X: {flightData.ax}, Acc Y: {flightData.ay}");
-                Debug.Log($"Drone Speed: {newVel}");
+                //Debug.Log($"Acc X: {flightData.ax}, Acc Y: {flightData.ay}");
+                Debug.Log($"Drone Speed: {droneSpeed}");
+                speedText.text = droneSpeed.ToString();
 
                 Debug.Log($"Temp: {flightData.temperature}");
                 Debug.Log($"Current IP: {flightData.currentIP}");
