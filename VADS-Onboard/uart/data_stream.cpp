@@ -1,43 +1,6 @@
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <errno.h>
-#include <fcntl.h>
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <sys/file.h>
-#include <sys/time.h>
-#include <termios.h>
-#include <unistd.h>
-#include <vector>
-
-#include "AHRS.hpp"
-#include "Socket.hpp"
-
-#include "Common/MS5611.h"
-#include "Common/Ublox.h"
-#include "Common/Util.h"
-
-#include "Navio2/LSM9DS1.h"
-#include "Navio2/RCOutput_Navio2.h"
+#include "data_stream.h"
 
 #define UART_DEV "/dev/ttyAMA0"
-
-typedef struct live_data_s {
-	float temperature;
-	float pressure;
-	double latitude;
-	double longitude;
-	float stemp;
-	float pitch;
-	float yaw;
-	float roll;
-} ldat;
-
-typedef struct termios termios_t;
 
 static int tty_config(termios_t *tty, int port);
 
@@ -59,7 +22,6 @@ int main(int argc __attribute__((unused)), char **argv) {
 	termios_t tty, save;
 	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f, 0.f, 0.f, 0.f };
 	std::stringstream out;
-	// Socket sock;
 
 	uart_fd = open(argv[1] ? argv[1] : UART_DEV, O_RDWR | O_NOCTTY);
 	if (uart_fd < 0)
@@ -70,7 +32,6 @@ int main(int argc __attribute__((unused)), char **argv) {
 	if (tty_config(&tty, uart_fd))
 		return tcsetattr(uart_fd, TCSANOW, &save), 1;
 	usleep(1000);
-	// sock = Socket();
 	while (sending) {
 		out.str(std::string());
 		read_MS5611(&dat);
@@ -85,9 +46,10 @@ int main(int argc __attribute__((unused)), char **argv) {
 			<< "\",\"pitch\":\"" << dat.pitch
 			<< "\",\"yaw\":\"" << dat.yaw
 			<< "\",\"roll\":\"" << dat.roll
-			<< "\"}\n";
+			<< "\",\"accel\":{\"x\":\"" << dat.accel.x
+			<< "\",\"y\":\"" << dat.accel.y
+			<< "\"}}\n";
 		std::cout << out.str() << std::endl;
-		// sock.output(out.str());
 		write(uart_fd, out.str().c_str(), out.str().length());
 		// printf("LENGTH OF OUTPUT: %u\n", strlen(out.str().c_str()));
 		// usleep(28 * 100);
@@ -131,8 +93,10 @@ static void read_MS5611(ldat *dat) {
 	static MS5611 barometer;
 	static int config{0};
 
-	if (!config)
-		barometer.initialize(), config = 1;
+	if (!config) {
+		barometer.initialize();
+		config = 1;
+	}
 	barometer.refreshPressure();
 	usleep(10000);
 	barometer.readPressure();
@@ -147,10 +111,12 @@ static void read_MS5611(ldat *dat) {
 static void update_gps(ldat *dat) {
 	static Ublox gps;
 	static std::vector<double> position;
-	int config{0};
+	static int config{0};
 
-	if (!config && gps.configureSolutionRate(1000))
-		std::cerr << "Failed to set GPS rate: EXITING" << std::endl, exit(1);
+	if (!config && gps.configureSolutionRate(1000)) {
+		std::cerr << "Failed to set GPS rate: EXITING" << std::endl;
+		exit(1);
+	}
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		if (position[2])
 			(*dat).latitude = position[2]/10000000;
@@ -173,7 +139,7 @@ static void update_stemp(ldat *dat) {
 static void update_ahrs(ldat *dat) {
 	static std::unique_ptr <AHRS> ahrs;
 	static std::unique_ptr <InertialSensor> imu;
-	int config{0};
+	static int config{0};
 
 	if (!config) {
 		imu = std::unique_ptr <InertialSensor> { new LSM9DS1() };
@@ -203,8 +169,10 @@ static void imu_update(AHRS *ahrs, ldat *dat) {
 	ahrs->updateIMU(dt);
 	ahrs->getEuler(&roll, &pitch, &yaw);
 	if (!is_first) {
-		if (dt > maxdt) maxdt = dt;
-		if (dt < mindt) mindt = dt;
+		if (dt > maxdt)
+			maxdt = dt;
+		else if (dt < mindt)
+			mindt = dt;
 	}
 	is_first = 0;
 	dtsumm += dt;
@@ -214,4 +182,18 @@ static void imu_update(AHRS *ahrs, ldat *dat) {
 		(*dat).roll = roll;
 		dtsumm = 0;
 	}
+}
+
+void read_LSM9DS1(ldat *dat) {
+	static std::unique_ptr <InertialSensor> lsm;
+	static int config{0};
+
+	if (!config) {
+		lsm = std::unique_ptr <InertialSensor> { new LSM9DS1() };
+		lsm->initialize();
+		config = 1;
+	}
+	lsm->update();
+	lsm->read_accelerometer(&(*dat).accel.x, &(*dat).accel.y, &(*dat).accel.z);
+	lsm->read_gyroscope(&(*dat).gyro.x, &(*dat).gyro.y, &(*dat).gyro.z);
 }
