@@ -9,7 +9,7 @@ interface FlightData {
   yaw: string;
   voltage: string;
   battery: string;
-  outsideTemp: string;
+  temperature: string;
   surfaceTemp: string;
 }
 
@@ -29,8 +29,8 @@ export const Gauges: React.FC = () => {
           yaw: `${data.yaw}°`,
           voltage: `${data.voltage} V`,
           battery: `${data.battery}%`,
-          outsideTemp: `${data.outsideTemp}℉`,
-          surfaceTemp: `${data.surfaceTemp}℉`,
+          temperature: `${data.temperature}°C`,
+          surfaceTemp: `${data.surfaceTemp}°C`,
         });
       } catch (error) {
         console.error('Error fetching flight data:', error);
@@ -81,7 +81,7 @@ export const Gauges: React.FC = () => {
         <div id="gauge-8" style={{ width: '70%', border: '#AAF0D1 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>OTEMP</p>
           <hr style={{ border: '#AAF0D1 1px solid', width: '100%' }} />
-          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.outsideTemp : 'N/A'}</p>
+          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.temperature : 'N/A'}</p>
         </div>
         <div id="gauge-9" style={{ width: '70%', border: '#FF0000 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>STEMP</p>
