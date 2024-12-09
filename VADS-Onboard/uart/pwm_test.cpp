@@ -6,9 +6,9 @@
 
 #define ESC_INIT 900
 
-#define SERVO_SET 1050
+#define SERVO_SET 1200
 
-#define SERVO_MAX 1200
+#define SERVO_MAX 1400
 #define SERVO_MIN 1050
 
 #define PWM0 0
