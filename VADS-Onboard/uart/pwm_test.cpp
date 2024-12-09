@@ -1,39 +1,38 @@
 #include <memory>
 #include <unistd.h>
 
-#include "Common/Util.h"
-
 #include "Navio2/PWM.h"
 #include "Navio2/RCOutput_Navio2.h"
 
-#define SERVO_MIN 1250 /*mS*/
-#define SERVO_MAX 1750 /*mS*/
-
-#define SERVO_SET 1550
-
 #define ESC_INIT 900
+
+#define SERVO_SET 1050
+
+#define SERVO_MAX 1200
+#define SERVO_MIN 1050
 
 #define PWM0 0
 #define PWM1 1
 #define PWM2 2
 #define PWM3 3
 
-// using namespace Navio;
-
 int main(void) {
         std::unique_ptr <RCOutput> pwm = std::unique_ptr <RCOutput> { new RCOutput_Navio2() };
+	int pulse = SERVO_SET, limit = SERVO_MAX;
 
 	if (getuid())
-		return fprintf(stderr, "Launch with root priveleges\n"), 1;
+		return fprintf(stderr, "Permission denied\n"), 1;
+	if (pulse > limit)
+		return fprintf(stderr, "NO WAY BUDDY\n"), 1;
 	if (!(pwm->initialize(PWM0)) ||
 		!(pwm->initialize(PWM1)) ||
 		!(pwm->initialize(PWM2)) ||
 		!(pwm->initialize(PWM3)))
 		return 1;
-	pwm->set_frequency(PWM0, 8);
-	pwm->set_frequency(PWM1, 8);
-	pwm->set_frequency(PWM2, 8);
-	pwm->set_frequency(PWM3, 8);
+	pwm->set_frequency(PWM0, 24);
+	pwm->set_frequency(PWM1, 24);
+	pwm->set_frequency(PWM2, 24);
+	pwm->set_frequency(PWM3, 24);
 	if (!(pwm->enable(PWM0)) ||
 		!(pwm->enable(PWM1)) ||
 		!(pwm->enable(PWM2)) ||
@@ -47,10 +46,16 @@ int main(void) {
 		usleep(100000);
 	}
 	while (true) {
-		pwm->set_duty_cycle(PWM0, SERVO_SET);
-		pwm->set_duty_cycle(PWM1, SERVO_SET);
-		pwm->set_duty_cycle(PWM2, SERVO_SET);
-		pwm->set_duty_cycle(PWM3, SERVO_SET);
+		if (limit == SERVO_MAX)
+			++pulse;
+		else if (limit == SERVO_MIN)
+			--pulse;
+		if (pulse == limit)
+			limit = limit == SERVO_MAX ? SERVO_MIN : SERVO_MAX;
+		pwm->set_duty_cycle(PWM0, pulse);
+		pwm->set_duty_cycle(PWM1, pulse);
+		pwm->set_duty_cycle(PWM2, pulse);
+		pwm->set_duty_cycle(PWM3, pulse);
 		usleep(100000);
 	}
 	return 0;

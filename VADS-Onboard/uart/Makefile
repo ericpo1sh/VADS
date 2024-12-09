@@ -35,6 +35,12 @@ pwm: $(SOURCEDIR)/pwm_test.cpp lib
 	@mkdir -p $(BUILDDIR)
 	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
 
+test_receiver: $(SOURCEDIR)/uart_receiver_test.cpp
+	$(CXX) $(CFLAGS) $< -o $(BUILDDIR)/$@
+
+test_sender: $(SOURCEDIR)/uart_sender_test.cpp
+	$(CXX) $(CFLAGS) $< -o $(BUILDDIR)/$@
+
 clean:
 	$(MAKE) -C $(LIBDIR) clean
 	rm -rf $(BUILDDIR)
