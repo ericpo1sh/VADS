@@ -167,7 +167,7 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     const checkPortStatus = async () => {
       try {
-        const response = await fetch('http://localhost:3001/ping');
+        const response = await fetch('http://localhost:3030/ping');
         if (response.ok) {
           setPortStatus(true);
         } else {
