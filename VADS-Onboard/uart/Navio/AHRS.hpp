@@ -28,6 +28,9 @@ public:
     void updateIMU(float dt);
     void setGyroOffset();
     void getEuler(float* roll, float* pitch, float* yaw);
+    void getAccel(float *x, float *y, float *z);
+    void getGyro(float *x, float *y, float *z);
+    void getMag(float *x, float *y, float *z);
 
     float invSqrt(float x);
     float getW();

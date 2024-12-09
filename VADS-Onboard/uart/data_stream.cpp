@@ -9,7 +9,6 @@ static void update_gps(ldat *dat);
 static void update_stemp(ldat *dat);
 static void update_ahrs(ldat *dat);
 static void imu_update(AHRS *ahrs, ldat *dat);
-static void read_LSM9DS1(ldat *dat);
 
 volatile bool sending = true;
 
@@ -21,7 +20,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	std::size_t input_len{0};
 	int prompt_ret{0}, uart_fd{-1};
 	termios_t tty, save;
-	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f, 0.f, 0.f, 0.f, { 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f }};
+	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f, 0.f, 0.f, 0.f,{ 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f }};
 	std::stringstream out;
 
 	uart_fd = open(argv[1] ? argv[1] : UART_DEV, O_RDWR | O_NOCTTY);
@@ -39,7 +38,6 @@ int main(int argc __attribute__((unused)), char **argv) {
 		update_gps(&dat);
 		update_stemp(&dat);
 		update_ahrs(&dat);
-		read_LSM9DS1(&dat);
 		out << "{\"temperature\":\"" << dat.temperature
 			<< "\",\"pressure\":\"" << dat.pressure
 			<< "\",\"latitude\":\"" << dat.latitude
@@ -149,6 +147,8 @@ static void update_ahrs(ldat *dat) {
 		ahrs->setGyroOffset();
 		config = 1;
 	}
+	ahrs->getAccel(&(*dat).accel.x, &(*dat).accel.y, &(*dat).accel.z);
+	ahrs->getGyro(&(*dat).gyro.x, &(*dat).gyro.y, &(*dat).gyro.z);
 	imu_update(ahrs.get(), dat);
 }
 
@@ -184,18 +184,4 @@ static void imu_update(AHRS *ahrs, ldat *dat) {
 		(*dat).roll = roll;
 		dtsumm = 0;
 	}
-}
-
-static void read_LSM9DS1(ldat *dat) {
-	static std::unique_ptr <InertialSensor> lsm;
-	static int config{0};
-
-	if (!config) {
-		lsm = std::unique_ptr <InertialSensor> { new LSM9DS1() };
-		lsm->initialize();
-		config = 1;
-	}
-	lsm->update();
-	lsm->read_accelerometer(&(*dat).accel.x, &(*dat).accel.y, &(*dat).accel.z);
-	lsm->read_gyroscope(&(*dat).gyro.x, &(*dat).gyro.y, &(*dat).gyro.z);
 }
