@@ -29,7 +29,7 @@ $(BUILDDIR)/%: $(TESTDIR)/%.cpp lib
 
 data_stream: $(SOURCEDIR)/data_stream.cpp lib
 	@mkdir -p $(BUILDDIR)
-	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(SOURCEDIR)/Socket.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
 
 pwm: $(SOURCEDIR)/pwm_test.cpp lib
 	@mkdir -p $(BUILDDIR)
