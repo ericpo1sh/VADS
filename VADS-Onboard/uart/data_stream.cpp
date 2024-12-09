@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "AHRS.hpp"
+#include "Socket.hpp"
 
 #include "Common/MS5611.h"
 #include "Common/Ublox.h"
@@ -58,6 +59,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	termios_t tty, save;
 	ldat dat = { 0.f, 0.f, 0.0, 0.0, 0.f, 0.f, 0.f, 0.f };
 	std::stringstream out;
+	Socket sock;
 
 	uart_fd = open(argv[1] ? argv[1] : UART_DEV, O_RDWR | O_NOCTTY);
 	if (uart_fd < 0)
@@ -68,6 +70,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	if (tty_config(&tty, uart_fd))
 		return tcsetattr(uart_fd, TCSANOW, &save), 1;
 	usleep(1000);
+	sock = Socket();
 	while (sending) {
 		out.str(std::string());
 		read_MS5611(&dat);
@@ -84,9 +87,8 @@ int main(int argc __attribute__((unused)), char **argv) {
 			<< "\",\"roll\":\"" << dat.roll
 			<< "\"}";
 		std::cout << out.str() << std::endl;
-		// std::cout << out.str().c_str() << std::endl;
-		// std::cout << input << std::endl;
-		write(uart_fd, out.str().c_str(), out.str().length());
+		sock.output(out.str());
+		// write(uart_fd, out.str().c_str(), out.str().length());
 		// printf("LENGTH OF OUTPUT: %u\n", strlen(out.str().c_str()));
 		// usleep(28 * 100);
 		// std::cout << "SENDING: " << input;

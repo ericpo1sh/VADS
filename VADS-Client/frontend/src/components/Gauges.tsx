@@ -7,10 +7,10 @@ interface FlightData {
   altitude: string;
   pitch: string;
   yaw: string;
-  voltage: string;
-  battery: string;
+  roll: string;
+  pressure: string;
   temperature: string;
-  surfaceTemp: string;
+  stemp: string;
 }
 
 export const Gauges: React.FC = () => {
@@ -22,15 +22,15 @@ export const Gauges: React.FC = () => {
         const response = await fetch('http://localhost:3030/api/flight-data');
         const data = await response.json();
         setFlightData({
-          coordinates: `${data.lat}, ${data.lng}`,
-          speed: `${data.velocity} mph`,
-          altitude: `${data.alt} ft`,
+          coordinates: data.lat && data.lng ? `${data.lat}, ${data.lng}` : 'N/A',
+          speed: `${data.velocity} m/s`,
+          altitude: `${data.alt} m`,
           pitch: `${data.pitch}°`,
           yaw: `${data.yaw}°`,
-          voltage: `${data.voltage} V`,
-          battery: `${data.battery}%`,
+          roll: `${data.roll}°`,
+          pressure: `${data.pressure} mb`,
           temperature: `${data.temperature}°C`,
-          surfaceTemp: `${data.surfaceTemp}°C`,
+          stemp: `${data.stemp}°C`,
         });
       } catch (error) {
         console.error('Error fetching flight data:', error);
@@ -69,14 +69,14 @@ export const Gauges: React.FC = () => {
           <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.yaw : 'N/A'}</p>
         </div>
         <div id="gauge-6" style={{ width: '70%', border: '#FFEE07 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
-          <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>SVOLT</p>
+          <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>ROLL</p>
           <hr style={{ border: '#FFEE07 1px solid', width: '100%' }} />
-          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.voltage : 'N/A'}</p>
+          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.roll : 'N/A'}</p>
         </div>
         <div id="gauge-7" style={{ width: '70%', border: '#CBFF48 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
-          <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>BATT</p>
+          <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>BARO</p>
           <hr style={{ border: '#CBFF48 1px solid', width: '100%' }} />
-          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.battery : 'N/A'}</p>
+          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.pressure : 'N/A'}</p>
         </div>
         <div id="gauge-8" style={{ width: '70%', border: '#AAF0D1 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>OTEMP</p>
@@ -86,7 +86,7 @@ export const Gauges: React.FC = () => {
         <div id="gauge-9" style={{ width: '70%', border: '#FF0000 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>STEMP</p>
           <hr style={{ border: '#FF0000 1px solid', width: '100%' }} />
-          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.surfaceTemp : 'N/A'}</p>
+          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.stemp : 'N/A'}</p>
         </div>
       </div>
     </div>
