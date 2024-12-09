@@ -25,17 +25,6 @@
 
 #define UART_DEV "/dev/ttyAMA0"
 
-// struct termios {
-//     tcflag_t c_iflag;	/* input mode flags */
-//     tcflag_t c_oflag;	/* output mode flags */
-//     tcflag_t c_cflag;	/* control mode flags */
-//     tcflag_t c_lflag;	/* local mode flags */
-//     cc_t c_line;			/* line discipline */
-//     cc_t c_cc[NCCS];		/* control characters */
-//     speed_t c_ispeed;	/* input speed */
-//     speed_t c_ospeed;	/* output speed */
-// };
-
 typedef struct live_data_s {
 	float temperature;
 	float pressure;
@@ -85,14 +74,14 @@ int main(int argc __attribute__((unused)), char **argv) {
 		update_gps(&dat);
 		update_stemp(&dat);
 		update_ahrs(&dat);
-		out << "{\"temperature\": \"" << dat.temperature
-			<< "\", \"pressure\": \"" << dat.pressure
-			<< "\", \"latitude\": \"" << dat.latitude
-			<< "\", \"longitude\": \"" << dat.longitude
-			<< "\", \"stemp\": \"" << dat.stemp 
-			<< "\", \"pitch\": \"" << dat.pitch
-			<< "\", \"yaw\": \"" << dat.yaw
-			<< "\", \"roll\": \"" << dat.roll
+		out << "{\"temperature\":\"" << dat.temperature
+			<< "\",\"pressure\":\"" << dat.pressure
+			<< "\",\"latitude\":\"" << dat.latitude
+			<< "\",\"longitude\":\"" << dat.longitude
+			<< "\",\"stemp\":\"" << dat.stemp 
+			<< "\",\"pitch\":\"" << dat.pitch
+			<< "\",\"yaw\":\"" << dat.yaw
+			<< "\",\"roll\":\"" << dat.roll
 			<< "\"}";
 		std::cout << out.str() << std::endl;
 		// std::cout << out.str().c_str() << std::endl;

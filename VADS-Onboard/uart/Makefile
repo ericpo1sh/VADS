@@ -16,7 +16,9 @@ EXECUTABLES := $(patsubst %, $(BUILDDIR)/%, $(notdir $(MODULES:.cpp=)))
 
 .PHONY: all lib clean
 
-all: $(EXECUTABLES)
+# all: $(EXECUTABLES)
+
+all: data_stream pwm
 
 lib:
 	$(MAKE) -C $(LIBDIR) all
@@ -25,9 +27,19 @@ $(BUILDDIR)/%: $(TESTDIR)/%.cpp lib
 	@mkdir -p $(BUILDDIR)
 	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIB_INCLUDES) $(LDFLAGS) -o $@
 
-$(BUILDDIR)/%: $(SOURCEDIR)/data-stream.cpp lib
+data_stream: $(SOURCEDIR)/data_stream.cpp lib
 	@mkdir -p $(BUILDDIR)
-	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
+
+pwm: $(SOURCEDIR)/pwm_test.cpp lib
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
+
+test_receiver: $(SOURCEDIR)/uart_receiver_test.cpp
+	$(CXX) $(CFLAGS) $< -o $(BUILDDIR)/$@
+
+test_sender: $(SOURCEDIR)/uart_sender_test.cpp
+	$(CXX) $(CFLAGS) $< -o $(BUILDDIR)/$@
 
 clean:
 	$(MAKE) -C $(LIBDIR) clean

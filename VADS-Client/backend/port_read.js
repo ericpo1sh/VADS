@@ -1,39 +1,74 @@
-// importing dependencies
-const Serialport = require("serialport");
-const Readline = require("@serialport/parser-readline");
+const { SerialPort } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
+const { DelimiterParser } = require('@serialport/parser-delimiter');
+const express = require("express");
+const cors = require("cors");
 
-//Set serial port
-const port = new Serialport("/dev/ttyUSB0", {
-    baudrate: 57600,
-});
+const app = express();
+app.use(cors());
+const port = 3030;
 
-//Set parser and pip in port
-const parser = new Readline();
-port.pipe(parser);
+// Set the serial port path
+const serialPortPath = "/dev/ttyUSB0";
 
-//Data to JSON for calling in Components
-parser.on('data', (data) => {
-    try {
-        const flightData = JSON.parse(data);
-        console.log("Converted Parsed line to JSON");
+try {
+    // Verify if the serial port path exists
+    const fs = require('fs');
+    if (!fs.existsSync(serialPortPath)) {
+        throw new Error(`Serial port path does not exist: ${serialPortPath}`);
     }
-    catch (error) {
-        console.log(error);
+
+    // Set up the serial port
+    const serialPort = new SerialPort({
+      path: "/dev/ttyUSB0",
+      baudRate: 57600, // speed 57600 baud
+    });
+    serialPort.on('open', () => {
+      console.log("Serial port opened successfully.");
+    });
+
+    serialPort.on('error', (err) => {
+      console.error("Error opening serial port:", err.message);
+    });
+    // Set up the parser and pipe data into it
+    const parser = serialPort.pipe(new DelimiterParser({ delimiter: '\n' }));
+
+    let flightData = {
+      "temperature": "0.0",
+    };
+    let velocity = 0;
+    console.log('yooo');
+    parser.on('data', (data) => {
+        // try {
+            flightData = JSON.parse(data);
+            console.log('hello');
+            console.log(flightData);
+            const acX = flightData.ax;
+            const acY = flightData.ay;
+            velocity = calcSpeed(velocity, acX, acY);
+            flightData.velocity = velocity;
+            console.log("Updated Flight Data:", flightData);
+        // } catch (error) {
+        //     console.error("Error parsing data:", error);
+        // }
+    });
+
+    function calcSpeed(prevVel, acX, acY) {
+        if (isNaN(acX) || isNaN(acY)) {
+            console.error("Invalid acceleration values:", { acX, acY });
+            return prevVel;
+        }
+        const accV = Math.sqrt(Math.pow(acX, 2) + Math.pow(acY, 2));
+        return Math.abs(prevVel + accV * 2);
     }
-});
 
-var velocity = 0
-var acX = flightData.ax;
-var acy = flightData.ay;
-velocity = calcSpeed(velocity, acx, acY);
+    app.get("/api/flight-data", (req, res) => {
+        res.json(flightData);
+    });
 
-//This Function is to get the velocity of the drone from the acceleration
-//prevVel is the previous velocity, should start at 0
-//acX is acceleration in X-axis, acY is for the Y-axis
-function calcSpeed(prevVel, acX, acY) {
-    //acV is the acceleration Vector got through pythagoras
-    var accV = Math.sqrt(Math.pow(acX, 2) + Math.pow(acY, 2));
-    //newVel is the calculated absolute value of prevVel plus acV times our data refresh interval
-    var newVel = Math.abs((prevVel + (acV * 2)));
-    return newVel;
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+} catch (error) {
+    console.error("Failed to initialize serial port:", error.message);
 }

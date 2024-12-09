@@ -11,17 +11,6 @@
 
 #define UART_DEV "/dev/ttyAMA0"
 
-// struct termios {
-//     tcflag_t c_iflag;	/* input mode flags */
-//     tcflag_t c_oflag;	/* output mode flags */
-//     tcflag_t c_cflag;	/* control mode flags */
-//     tcflag_t c_lflag;	/* local mode flags */
-//     cc_t c_line;			/* line discipline */
-//     cc_t c_cc[NCCS];		/* control characters */
-//     speed_t c_ispeed;	/* input speed */
-//     speed_t c_ospeed;	/* output speed */
-// };
-
 typedef struct termios termios_t;
 
 static int tty_config(termios_t *tty, int port);
@@ -41,9 +30,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 	int prompt_ret = 0, uart_fd = -1;
 	termios_t tty, save;
 
-	if (argc != 2)
-		return fprintf(stderr, "Please supply device (e.g. /dev/ttyUSB0)");
-	uart_fd = open(argv[1], O_RDWR | O_NOCTTY);
+	uart_fd = open(argv[1] ? argv[1] : UART_DEV, O_RDWR | O_NOCTTY);
 	if (uart_fd < 0)
 		return fprintf(stderr, "open error - %i: %s\n", errno, strerror(errno)), 1;
 	if (tcgetattr(uart_fd, &tty))
