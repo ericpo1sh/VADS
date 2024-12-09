@@ -7,7 +7,8 @@ class Socket {
 public:
 	Socket(char *ip,char *port);
 	Socket();
-	void output(const std::string& data);
+	void send(const std::string data);
+	void receive(char *buff);
 
 private:
 	int sockfd;
