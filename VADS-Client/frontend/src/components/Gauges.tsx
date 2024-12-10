@@ -22,7 +22,7 @@ export const Gauges: React.FC = () => {
         const response = await fetch('http://localhost:3030/api/flight-data');
         const data = await response.json();
         setFlightData({
-          coordinates: data.lat && data.lng ? `${data.lat}, ${data.lng}` : 'N/A',
+          coordinates: data.latitude && data.longitude ? `${data.latitude}, ${data.longitude}` : 'N/A',
           speed: data.velocity < 1 ? '<1 m/s' : `${data.velocity} m/s`,
           altitude: data.altitude ? `${data.altitude} m` : 'N/A',
           pitch: `${data.pitch}°`,
