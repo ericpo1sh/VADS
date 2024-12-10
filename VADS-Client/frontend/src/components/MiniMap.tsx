@@ -18,7 +18,33 @@ export const MiniMap: React.FC<MiniMapProps> = ({ liveLatitude, liveLongitude })
     outline: '5px solid white'
   };
 
-  const [center, setCenter] = useState({ lat: 36.15615459163338, lng: -95.99481697903099 });
+  const [center, setCenter] = useState({ lat: 37.4690768620551, lng: -115.7327567221084 });
+
+  useEffect(() => {
+    const fetchFlightData = async () => {
+      try {
+        const response = await fetch('http://localhost:3030/api/flight-data');
+        if (!response.ok) {
+          throw new Error(`Error fetching flight data: ${response.statusText}`);
+        }
+        const data = await response.json();
+        if (data.latitude && data.longitude) {
+          setCenter({
+            lat: Number(data.latitude),
+            lng: Number(data.longitude)
+          });
+        } else {
+          console.error('Coordinates not found in API response');
+        }
+      } catch (error) {
+        console.error('Error fetching flight data:', error);
+      }
+    };
+
+    const intervalId = setInterval(fetchFlightData, 100); // Polling every second
+
+    return () => clearInterval(intervalId); // Cleanup on component unmount
+  }, []);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;

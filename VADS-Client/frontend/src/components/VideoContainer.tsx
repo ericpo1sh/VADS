@@ -14,12 +14,15 @@ export const VideoContainer: React.FC = () => {
         lowLatencyMode: true,
       });
 
-      hls.loadSource('http://192.168.94.143:8888/stream/index.m3u8');
+      hls.loadSource('http://108.253.217.48:8888/stream/index.m3u8');
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video
           .play()
-          .then(() => setIsLiveStreamActive(true))
+          .then(() => {
+            video.playbackRate = 2.0;
+            setIsLiveStreamActive(true)
+            })
           .catch(() => setIsLiveStreamActive(false));
       });
 
