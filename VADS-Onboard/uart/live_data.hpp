@@ -7,8 +7,8 @@ class live_data {
 private:
 	float temperature = 0.f;
 	float pressure = 0.f;
-	double latitude = 0.0;
-	double longitude = 0.0;
+	char latitude[12] = {0};
+	char longitude[12] = {0};
 	float stemp = 0.f;
 	float pitch = 0.f;
 	float yaw = 0.f;

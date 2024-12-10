@@ -1,4 +1,5 @@
 #include "live_data.hpp"
+#include <iomanip>
 
 live_data::live_data(void) {}
 
@@ -32,9 +33,9 @@ void live_data::update_gps(void) {
 	}
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		if (position[2])
-			latitude = position[2]/10000000;
+			snprintf(latitude, 11, "%lf", position[2] / 10000000);
 		if (position[1])
-			longitude = position[1]/10000000;
+			snprintf(longitude, 11, "%lf", position[1] / 10000000);
 	}
 	usleep(200);
 }
