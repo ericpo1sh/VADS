@@ -40,7 +40,7 @@ try {
   parser.on('data', (data) => {
     try {
       flightData = JSON.parse(data);
-      console.log(flightData);
+      // console.log(flightData);
       const acX = flightData.accel.x;
       const acY = flightData.accel.y;
       velocity = calcSpeed(velocity, acX, acY);
