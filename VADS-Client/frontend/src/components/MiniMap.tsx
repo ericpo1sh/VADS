@@ -18,7 +18,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({ liveLatitude, liveLongitude })
     outline: '5px solid white'
   };
 
-  const [center, setCenter] = useState({ lat: 37.4690768620551, lng: -115.7327567221084 });
+  const [center, setCenter] = useState({ lat: 36.15613, lng: -95.99501 });
 
   useEffect(() => {
     const fetchFlightData = async () => {

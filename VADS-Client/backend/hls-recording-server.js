@@ -23,12 +23,11 @@ app.post('/start-recording', (req, res) => {
   const outputFilePath = path.join(__dirname, 'recordings', `recording_${formattedDate}.mp4`);
 
   recordingProcess = spawn('ffmpeg', [
-    '-i', 'http://108.253.217.48:8888/stream/index.m3u8',
+    '-i', 'http://192.168.94.143:8888/stream/index.m3u8',
     '-c', 'copy',
     '-f', 'mp4',
     '-movflags', 'frag_keyframe+empty_moov',
     '-t', '00:10:00',
-    '-preset', 'ultrafast',
     outputFilePath
   ]);
 

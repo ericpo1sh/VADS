@@ -101,6 +101,10 @@ export const Recordings: React.FC = () => {
                 onContextMenu={(e) => handleRightClick(e, recording.name)}
                 onMouseEnter={() => setHoveredVideo(index)}
                 onMouseLeave={() => setHoveredVideo(null)}
+                onPlay={(e) => {
+                  const videoElement = e.currentTarget;
+                  videoElement.playbackRate = 2;
+                }}
               />
               {/* Play Button Overlay */}
               {hoveredVideo !== index && (
@@ -123,7 +127,7 @@ export const Recordings: React.FC = () => {
                 textAlign: "center",
                 marginTop: "10px",
                 fontFamily: "Roboto Mono",
-                fontSize: "20px",
+                fontSize: "16px",
                 color: "#333",
                 fontWeight: 600
               }}>
