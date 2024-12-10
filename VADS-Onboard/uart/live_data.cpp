@@ -33,9 +33,9 @@ void live_data::update_gps(void) {
 	}
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		if (position[2])
-			latitude = position[2] / 10000000;
+			snprintf(latitude, 9, "%lf", position[2] / 10000000);
 		if (position[1])
-			longitude = position[1] / 10000000;
+			snprintf(longitude, 9, "%lf", position[1] / 10000000);
 	}
 	usleep(200);
 }
@@ -105,7 +105,7 @@ std::string live_data::get_json(void) {
 	static std::stringstream out;
 
 	out.str(std::string());
-	std::cout << std::setprecision(6) << latitude << " " << std::setprecision(6) << longitude << std::endl;
+	std::cout << latitude << " " << longitude << std::endl;
 	out << "{\"temperature\":\"" << temperature
 		<< "\",\"pressure\":\"" << pressure
 		<< "\",\"latitude\":\"" << latitude
