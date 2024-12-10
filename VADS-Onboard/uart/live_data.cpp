@@ -32,9 +32,9 @@ void live_data::update_gps(void) {
 	}
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, position)) {
 		if (position[2])
-			latitude = position[2]/100000;
+			latitude = position[2] / 10000000;
 		if (position[1])
-			longitude = position[1]/100000;
+			longitude = position[1] / 10000000;
 	}
 	usleep(200);
 }
