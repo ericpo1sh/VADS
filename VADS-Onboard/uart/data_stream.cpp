@@ -143,6 +143,7 @@ static void update_ahrs(ldat *dat) {
 
 	if (!config) {
 		imu = std::unique_ptr <InertialSensor> { new LSM9DS1() };
+		imu->initialize();
 		ahrs = std::unique_ptr <AHRS> { new AHRS(move(imu)) };
 		ahrs->setGyroOffset();
 		config = 1;
