@@ -32,7 +32,7 @@ int main(int argc __attribute__((unused)), char **argv) {
 		dat.update_stemp();
 		dat.update_ahrs();
 		out = dat.get_json();
-		// std::cout << out;
+		std::cout << out;
 		write(uart_fd, out.c_str(), out.length());
 		// printf("LENGTH OF OUTPUT: %u\n", strlen(out.c_str()));
 		// usleep(28 * 100);
