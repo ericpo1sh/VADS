@@ -227,6 +227,21 @@ float AHRS::invSqrt(float x) {
 	return y;
 }
 
+void AHRS::getAccel(float *x, float *y, float *z) {
+	sensor->update();
+	sensor->read_accelerometer(x, y, z);
+}
+
+void AHRS::getGyro(float *x, float *y, float *z) {
+	sensor->update();
+	sensor->read_gyroscope(x, y, z);
+}
+
+void AHRS::getMag(float *x, float *y, float *z) {
+	sensor->update();
+	sensor->read_magnetometer(x, y, z);
+}
+
 float AHRS::getW() { return  q0; }
 
 float AHRS::getX() { return  q1; }
