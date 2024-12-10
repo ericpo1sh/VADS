@@ -22,22 +22,24 @@ export const Gauges: React.FC = () => {
         const response = await fetch('http://localhost:3030/api/flight-data');
         const data = await response.json();
         setFlightData({
-          coordinates: data.latitude && data.longitude ? `${data.latitude}, ${data.longitude}` : 'N/A',
+          coordinates: data.latitude !== '0' && data.longitude !== '0'
+            ? `${data.latitude}, ${data.longitude}`
+            : 'NO SIGNAL',
           speed: data.velocity < 1 ? '<1 m/s' : `${data.velocity} m/s`,
           altitude: data.altitude ? `${data.altitude} m` : 'N/A',
           pitch: `${data.pitch}°`,
           yaw: `${data.yaw}°`,
           roll: `${data.roll}°`,
-          pressure: `${data.pressure} mb`,
-          temperature: `${data.temperature}°C`,
-          stemp: `${data.stemp}°C`,
+          pressure: `${data.pressure.slice(0, -1)} mb`,
+          temperature: `${data.temperature.slice(0, -2)}°C`,
+          stemp: `${data.stemp.slice(0, -1)}°C`,
         });
       } catch (error) {
         console.error('Error fetching flight data:', error);
       }
     };
 
-    const intervalId = setInterval(fetchFlightData, 1000); // Poll every second
+    const intervalId = setInterval(fetchFlightData, 0); // Poll every second
     return () => clearInterval(intervalId); // Clean up on component unmount
   }, []);
   return (
@@ -45,7 +47,7 @@ export const Gauges: React.FC = () => {
       <div id="gauge-1" style={{ width: '89%', border: '#098800 2px solid', height: '120px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', marginLeft: '21.5px' }}>
         <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>COORDINATES</p>
         <hr style={{ border: '#098800 1px solid', width: '100%' }} />
-        <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.coordinates : 'N/A'}</p>
+        <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.coordinates : 'NO SIGNAL'}</p>
       </div>
       <div id='guage-grid' style={{ display: 'grid', width: '95%', gridTemplateColumns: 'repeat(2, 1fr)', marginLeft: '19.5px' }}>
         <div id="gauge-2" style={{ width: '88%', border: '#8414D9 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
