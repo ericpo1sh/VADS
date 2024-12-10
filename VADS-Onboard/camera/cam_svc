@@ -1,2 +1,0 @@
-#!/bin/bash
-/home/pi/VADS/VADS-Onboard/camera/start 2&>/home/pi/VADS/VADS-Onboard/camera/camera_log.txt &
