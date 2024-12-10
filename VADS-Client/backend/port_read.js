@@ -38,14 +38,17 @@ try {
 
   let velocity = 0;
   parser.on('data', (data) => {
-  // try {
-    flightData = JSON.parse(data);
-    console.log(flightData);
-    const acX = flightData.accel.x;
-    const acY = flightData.accel.y;
-    velocity = calcSpeed(velocity, acX, acY);
-    flightData.velocity = velocity;
-    console.log("Updated Flight Data:", flightData);
+    try {
+      flightData = JSON.parse(data);
+      console.log(flightData);
+      const acX = flightData.accel.x;
+      const acY = flightData.accel.y;
+      velocity = calcSpeed(velocity, acX, acY);
+      flightData.velocity = velocity;
+      console.log("Updated Flight Data:", flightData);
+    } catch (error) {
+      console.error("Unexpected characters received in data");
+    }
   });
 
   function calcSpeed(prevVel, acX, acY) {
