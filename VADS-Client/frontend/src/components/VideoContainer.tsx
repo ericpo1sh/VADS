@@ -19,7 +19,10 @@ export const VideoContainer: React.FC = () => {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video
           .play()
-          .then(() => setIsLiveStreamActive(true))
+          .then(() => {
+            video.playbackRate = 2.0;
+            setIsLiveStreamActive(true)
+            })
           .catch(() => setIsLiveStreamActive(false));
       });
 

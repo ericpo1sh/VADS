@@ -28,6 +28,7 @@ app.post('/start-recording', (req, res) => {
     '-f', 'mp4',
     '-movflags', 'frag_keyframe+empty_moov',
     '-t', '00:10:00',
+    '-preset', 'ultrafast',
     outputFilePath
   ]);
 
