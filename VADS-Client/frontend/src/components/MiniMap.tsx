@@ -28,10 +28,10 @@ export const MiniMap: React.FC<MiniMapProps> = ({ liveLatitude, liveLongitude })
           throw new Error(`Error fetching flight data: ${response.statusText}`);
         }
         const data = await response.json();
-        if (data.coordinates) {
+        if (data.latitude && data.longitude) {
           setCenter({
-            lat: data.coordinates[0],
-            lng: data.coordinates[1],
+            lat: data.latitude,
+            lng: data.longitude
           });
         } else {
           console.error('Coordinates not found in API response');
