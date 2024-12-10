@@ -67,7 +67,7 @@ void live_data::update_ahrs(void) {
 }
 
 void live_data::imu_update(AHRS *ahrs) {
-	float roll, pitch, yaw, dt;
+	float roll_tmp, pitch_tmp, yaw_tmp, dt;
 	struct timeval tv;
 	static float maxdt, mindt = 0.01, dtsumm = 0;
 	static int is_first = 1;
@@ -83,7 +83,7 @@ void live_data::imu_update(AHRS *ahrs) {
 	currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
 	dt = (currenttime - previoustime) / 1000000.0;
 	ahrs->updateIMU(dt);
-	ahrs->getEuler(&roll, &pitch, &yaw);
+	ahrs->getEuler(&roll_tmp, &pitch_tmp, &yaw_tmp);
 	if (!is_first) {
 		if (dt > maxdt)
 			maxdt = dt;
@@ -93,9 +93,9 @@ void live_data::imu_update(AHRS *ahrs) {
 	is_first = 0;
 	dtsumm += dt;
 	if (dtsumm > 0.05) {
-		pitch = pitch;
-		yaw = yaw * -1;
-		roll = roll;
+		pitch = pitch_tmp;
+		yaw = yaw_tmp * -1;
+		roll = roll_tmp;
 		dtsumm = 0;
 	}
 }
