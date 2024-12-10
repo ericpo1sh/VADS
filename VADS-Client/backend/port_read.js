@@ -41,8 +41,8 @@ try {
   // try {
     flightData = JSON.parse(data);
     console.log(flightData);
-    const acX = flightData.ax;
-    const acY = flightData.ay;
+    const acX = flightData.accel.x;
+    const acY = flightData.accel.y;
     velocity = calcSpeed(velocity, acX, acY);
     flightData.velocity = velocity;
     console.log("Updated Flight Data:", flightData);
@@ -54,7 +54,7 @@ try {
       return prevVel;
     }
     const accV = Math.sqrt(Math.pow(acX, 2) + Math.pow(acY, 2));
-    return Math.abs(prevVel + accV * 2);
+    return Math.round((Math.abs(accV * 2) + Number.EPSILON) * 1000000) / 1000000;
   }
 
   app.get("/api/flight-data", (req, res) => {

@@ -39,17 +39,4 @@ typedef struct gyro_data_s {
 	float z;
 } gyro_t;
 
-typedef struct live_data_s {
-	float temperature;
-	float pressure;
-	double latitude;
-	double longitude;
-	float stemp;
-	float pitch;
-	float yaw;
-	float roll;
-	accel_t accel;
-	gyro_t gyro;
-} ldat;
-
 #endif
