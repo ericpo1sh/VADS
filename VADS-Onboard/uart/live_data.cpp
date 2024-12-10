@@ -104,6 +104,7 @@ std::string live_data::get_json(void) {
 	static std::stringstream out;
 
 	out.str(std::string());
+	std::cout << latitude << " " << longitude << std::endl;
 	out << "{\"temperature\":\"" << temperature
 		<< "\",\"pressure\":\"" << pressure
 		<< "\",\"latitude\":\"" << latitude
