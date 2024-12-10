@@ -1,4 +1,5 @@
 #include "live_data.hpp"
+#include <iomanip>
 
 live_data::live_data(void) {}
 
@@ -104,7 +105,7 @@ std::string live_data::get_json(void) {
 	static std::stringstream out;
 
 	out.str(std::string());
-	std::cout << latitude << " " << longitude << std::endl;
+	std::cout << std::setprecision(6) << latitude << " " << std::setprecision(6) << longitude << std::endl;
 	out << "{\"temperature\":\"" << temperature
 		<< "\",\"pressure\":\"" << pressure
 		<< "\",\"latitude\":\"" << latitude
