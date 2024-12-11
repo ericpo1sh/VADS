@@ -26,12 +26,12 @@ export const Gauges: React.FC = () => {
             ? `${data.latitude}, ${data.longitude}`
             : 'NO SIGNAL',
           speed: data.velocity < 1 ? '<1 m/s' : `${data.velocity} m/s`,
-          altitude: data.altitude ? `${data.altitude} m` : 'N/A',
+          altitude: data.altitude ? `${data.altitude} m` : '0 m',
           pitch: `${data.pitch}°`,
           yaw: `${data.yaw}°`,
           roll: `${data.roll}°`,
-          pressure: `${data.pressure.slice(0, -1)} mb`,
-          temperature: `${data.temperature.slice(0, -2)}°C`,
+          pressure: `${data.pressure} mb`,
+          temperature: `${data.temperature.slice(0, -1)}°C`,
           stemp: `${data.stemp.slice(0, -1)}°C`,
         });
       } catch (error) {
@@ -58,7 +58,7 @@ export const Gauges: React.FC = () => {
         <div id="gauge-3" style={{ width: '88%', border: '#00A1F1 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>ALT</p>
           <hr style={{ border: '#00A1F1 1px solid', width: '100%' }} />
-          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.altitude : 'N/A'}</p>
+          <p style={{ fontWeight: '200', fontSize: '20px', margin: '0 0 10px 0' }}>{flightData ? flightData.altitude : '0 m'}</p>
         </div>
         <div id="gauge-4" style={{ width: '88%', border: '#B75300 2px solid', height: '100px', borderRadius: '30px', marginTop: '20px', backgroundColor: '#323232', fontFamily: 'Roboto Mono', textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
           <p style={{ fontWeight: '200', fontSize: '30px', margin: '10px 0 0 0' }}>PITCH</p>
