@@ -1,7 +1,10 @@
 #include "live_data.hpp"
 #include <iomanip>
 
-live_data::live_data(void) {}
+live_data::live_data(void) {
+	latitude[0] = '0';
+	longitude[0] = '0';
+}
 
 void live_data::read_MS5611(void) {
 	static MS5611 barometer;

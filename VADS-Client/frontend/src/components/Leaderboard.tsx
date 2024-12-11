@@ -81,10 +81,10 @@ export const Leaderboard: React.FC = () => {
         {sortedUsers.map((user) => (
           <div
             key={user._id}
-            style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '10px', backgroundColor: '#FFFFFF', borderRadius: '10px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
+            style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '10px', backgroundColor: '#FFFFFF', borderRadius: '10px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', fontFamily: 'Roboto Mono ' }}>
             <img src={user.profilePic} alt={`${user.username} profile`} style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }}/>
             <div>
-              <div style={{ fontWeight: 'bold' }}>{user.username}</div>
+              <div style={{ fontWeight: 'bold'}}>{user.username}</div>
               <div>{capitalizeWords(sortField.replace(/_/g, ' '))}: {user[sortField]}</div>
             </div>
           </div>
