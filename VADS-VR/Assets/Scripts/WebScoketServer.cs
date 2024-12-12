@@ -16,11 +16,11 @@ public class WebScoketServer : MonoBehaviour
             return;
         }
 
-        _server = new WebSocketServer($"ws://{localIPAddress}");
+        _server = new WebSocketServer($"ws://{localIPAddress}:");
         _server.AddWebSocketService<MessageBehavior>("/");
         _server.Start();
 
-        Debug.Log($"WebSocket hosted at: ws://{localIPAddress}");
+        Debug.Log($"WebSocket hosted at: ws://{localIPAddress}:");
     }
 
     void OnApplicationQuit()

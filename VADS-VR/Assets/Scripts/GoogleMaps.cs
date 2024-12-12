@@ -7,32 +7,37 @@ using System;
 
 public class GoogleMaps : MonoBehaviour
 {
+    private NewMonoBehaviourScript flightDataScript;
+
     public string apiKey;
     public float lat = -95.9928f;
     public float lon = 36.1540f;
-    public int zoom = 12;
+    public int zoom = 16;
 
     public enum resolution { low = 1, high = 2 };
-    public resolution mapRes = resolution.low;
+    public resolution mapRes = resolution.high;
 
     public enum type { roadMap, satellite, gybrid, terrain };
     public type mapType = type.roadMap;
     private string url = "";
-    private int mapWidth = 400;
-    private int mapHeight = 350;
+    private int mapWidth = 1920;
+    private int mapHeight = 1080;
     private bool mapLoading = false;
     private Rect rect;
 
     private string apiKeyLast;
     private float latLast = -95.9928f;
     private float lonLast = 36.1540f;
-    private int zoomLast = 8;
-    private resolution mapResLast = resolution.low;
+    private int zoomLast = 16;
+    private resolution mapResLast = resolution.high;
     private type mapTypeLast = type.roadMap;
     private bool updateMap = true;
 
     void Start()
     {
+        flightDataScript = GetComponent<NewMonoBehaviourScript>();
+        flightDataScript.allData.latitude = lat;
+        flightDataScript.allData.longitude = lon;
         StartCoroutine(GetGoogleMaps());
         rect = gameObject.GetComponent<RawImage>().rectTransform.rect;
         mapWidth = (int)Math.Round(rect.width);
@@ -46,6 +51,7 @@ public class GoogleMaps : MonoBehaviour
             rect = gameObject.GetComponent<RawImage>().rectTransform.rect;
             mapWidth = (int)Math.Round(rect.width);
             mapHeight = (int)Math.Round(rect.height);
+
             StartCoroutine(GetGoogleMaps());
             updateMap = true;
         }
@@ -67,8 +73,13 @@ public class GoogleMaps : MonoBehaviour
             gameObject.GetComponent<RawImage>().texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
 
             apiKeyLast = apiKey;
+
             latLast = lat;
+            //lat = flightDataScript.allData.latitude;
+
             lonLast = lon;
+            //lon = flightDataScript.allData.longitude;
+
             zoomLast = zoom;
             mapResLast = mapRes;
             mapTypeLast = mapType;
