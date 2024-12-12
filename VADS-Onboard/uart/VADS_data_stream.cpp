@@ -1,4 +1,4 @@
-#include "live_data.hpp"
+#include "VADS_live_data.hpp"
 #include "websocket.h"
 
 #define UART_DEV "/dev/ttyAMA0"
@@ -10,37 +10,27 @@ static int tty_config(termios_t *tty, int port);
 volatile bool sending = true;
 
 /**
- * main - infinite loop responsible for prompt and serial port communications
- * Return: 0, always
+ * main - program entry
+ * @argc: argument count
+ * @argv: argument vector
+ * Return: 0 upon success, otherwise 1
  */
 int main(int argc __attribute__((unused)), char **argv) {
-	std::size_t input_len{0};
-	int prompt_ret{0}, uart_fd{-1};
+	int uart_fd{-1};
 	termios_t tty, save;
-	live_data dat;
+	VADS_live_data dat;
 	std::string out;
-
 	websocketpp::server<websocketpp::config::asio> live_server;
 
 	uart_fd = open(argv[1] ? argv[1] : UART_DEV, O_RDWR | O_NOCTTY);
-	if (uart_fd < 0)
-		return fprintf(stderr, "open error - %i: %s\n", errno, strerror(errno)), 1;
-	if (tcgetattr(uart_fd, &tty))
-		return fprintf(stderr, "tcgetattr error - %i: %s\n", errno, strerror(errno)), 1;
+	if (uart_fd < 0 || tcgetattr(uart_fd, &tty))
+		return 1;
 	save = tty;
 	if (tty_config(&tty, uart_fd))
 		return tcsetattr(uart_fd, TCSANOW, &save), 1;
 	usleep(1000);
 	try {
-		live_server.set_message_handler(bind(&on_message, &live_server, std::placeholders::_1, std::placeholders::_2));
-		live_server.set_open_handler(bind(&on_open, &live_server, std::placeholders::_1));
-		live_server.set_close_handler(bind(&on_close, &live_server, std::placeholders::_1));
-
-		live_server.init_asio();
-		live_server.listen(PORT);
-		live_server.start_accept();
-
-		std::cout << "WebSocket server listening on port " << PORT << std::endl;
+		websocket_init(&live_server, PORT);
 		std::thread([&]() {
 			while (sending) {
 				dat.read_MS5611();
@@ -50,21 +40,13 @@ int main(int argc __attribute__((unused)), char **argv) {
 				out = dat.get_json();
 				std::cout << out;
 				write(uart_fd, out.c_str(), out.length());
-				send_message_to_all(out, &live_server);
-				// printf("LENGTH OF OUTPUT: %u\n", strlen(out.c_str()));
-				// usleep(28 * 100);
-				// std::cout << "SENDING: " << input;
-				// fflush(stdout);
-				// sleep(1);
+				send_message(out, &live_server);
 			}
 		}).detach();
 		live_server.run();
 	}
 	catch (websocketpp::exception const& e) {
-		std::cout << e.what() << std::endl;
-	}
-	catch (...) {
-		std::cout << "other exception" << std::endl;
+		std::cerr << e.what() << std::endl;
 	}
 	tcsetattr(uart_fd, TCSANOW, &save);
 	close(uart_fd);
@@ -94,6 +76,6 @@ static int tty_config(termios_t *tty, int port) {
 	tty->c_cc[VMIN] = 0;
 	tty->c_cc[VTIME] = 10;
 	if (tcsetattr(port, TCSANOW, tty))
-		return fprintf(stderr, "tcsetattr error - %i: %s\n", errno, strerror(errno)), 1;
+		return 1;
 	return 0;
 }
