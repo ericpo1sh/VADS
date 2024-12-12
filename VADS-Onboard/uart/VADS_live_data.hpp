@@ -1,9 +1,9 @@
-#ifndef _LIVE_DATA_HPP_
-#define _LIVE_DATA_HPP_
+#ifndef _VADS_LIVE_DATA_HPP_
+#define _VADS_LIVE_DATA_HPP_
 
-#include "data_stream.h"
+#include "VADS_data_stream.h"
 
-class live_data {
+class VADS_live_data {
 private:
 	float temperature = 0.f;
 	float pressure = 0.f;
@@ -16,7 +16,7 @@ private:
 	accel_t accel = {0.f, 0.f, 0.f};
 	gyro_t gyro = {0.f, 0.f, 0.f};
 public:
-	live_data();
+	VADS_live_data();
 
 	void read_MS5611();
 	void update_gps();

@@ -6,7 +6,6 @@ LIBDIR := $(CURDIR)/Navio
 PIGPIODIR := $(LIBDIR)/pigpio
 SOURCEDIR := $(CURDIR)
 BUILDDIR := $(CURDIR)/build
-TESTDIR := $(CURDIR)/serial_test
 
 INCLUDES := -I$(LIBDIR) -I$(PIGPIODIR)
 LIB_INCLUDES := -L$(LIBDIR) -L$(PIGPIODIR)
@@ -18,7 +17,7 @@ EXECUTABLES := $(patsubst %, $(BUILDDIR)/%, $(notdir $(MODULES:.cpp=)))
 
 # all: $(EXECUTABLES)
 
-all: data_stream pwm
+all: VADS_data_stream pwm
 
 lib:
 	$(MAKE) -C $(LIBDIR) all
@@ -27,9 +26,9 @@ $(BUILDDIR)/%: $(TESTDIR)/%.cpp lib
 	@mkdir -p $(BUILDDIR)
 	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIB_INCLUDES) $(LDFLAGS) -o $@
 
-data_stream: $(SOURCEDIR)/data_stream.cpp lib
+VADS_data_stream: $(SOURCEDIR)/VADS_data_stream.cpp lib
 	@mkdir -p $(BUILDDIR)
-	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(SOURCEDIR)/live_data.cpp $(SOURCEDIR)/websocket.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(SOURCEDIR)/VADS_live_data.cpp $(SOURCEDIR)/websocket.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
 
 pwm: $(SOURCEDIR)/pwm_test.cpp lib
 	@mkdir -p $(BUILDDIR)

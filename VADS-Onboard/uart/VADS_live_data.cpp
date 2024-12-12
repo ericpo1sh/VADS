@@ -1,12 +1,19 @@
-#include "live_data.hpp"
+#include "VADS_live_data.hpp"
 #include <iomanip>
 
-live_data::live_data(void) {
+/**
+ * VADS_live_data::VADS_live_data - class constructor
+ */
+VADS_live_data::VADS_live_data(void) {
 	latitude[0] = '0';
 	longitude[0] = '0';
 }
 
-void live_data::read_MS5611(void) {
+/**
+ * VADS_live_data::read_MS5611 - retrieves ambient temperature and barometric
+ *                               pressure readings from MS5611 sensor
+ */
+void VADS_live_data::read_MS5611(void) {
 	static MS5611 barometer;
 	static int config{0};
 
@@ -25,7 +32,10 @@ void live_data::read_MS5611(void) {
 	temperature = barometer.getTemperature();
 }
 
-void live_data::update_gps(void) {
+/**
+ * VADS_live_data::update_gps - retrieves GPS coordinates from Ublox module
+ */
+void VADS_live_data::update_gps(void) {
 	static Ublox gps;
 	static std::vector<double> position;
 	static int config{0};
@@ -43,7 +53,10 @@ void live_data::update_gps(void) {
 	usleep(200);
 }
 
-void live_data::update_stemp(void) {
+/**
+ * VADS_live_data::update_stemp - retrieves Raspberry Pi onboard temperature
+ */
+void VADS_live_data::update_stemp(void) {
 	std::ifstream stemp_file("/sys/class/thermal/thermal_zone0/temp");
 	std::stringstream buff;
 
@@ -53,7 +66,12 @@ void live_data::update_stemp(void) {
 	stemp /= 1000;
 }
 
-void live_data::update_ahrs(void) {
+/**
+ * VADS_live_data::update_ahrs - retrieves pitch, yaw, and roll values as well
+ *                               as accelerometer and gyrometer readings from
+ *                               LSM9DS1 IMU sensor
+ */
+void VADS_live_data::update_ahrs(void) {
 	static std::unique_ptr <AHRS> ahrs;
 	static std::unique_ptr <InertialSensor> imu;
 	static int config{0};
@@ -70,7 +88,12 @@ void live_data::update_ahrs(void) {
 	imu_update(ahrs.get());
 }
 
-void live_data::imu_update(AHRS *ahrs) {
+/**
+ * VADS_live_data::imu_update - measures, updates, and retrieves current IMU
+ *                              readings from LSM9DS1 IMU sensor
+ * @ahrs: 
+ */
+void VADS_live_data::imu_update(AHRS *ahrs) {
 	float roll_tmp, pitch_tmp, yaw_tmp, dt;
 	struct timeval tv;
 	static float maxdt, mindt = 0.01, dtsumm = 0;
@@ -104,7 +127,13 @@ void live_data::imu_update(AHRS *ahrs) {
 	}
 }
 
-std::string live_data::get_json(void) {
+/**
+ * VADS_live_data::get_json - serialization of class attributes that represent
+ *                            sensor readings for output over serial connection
+ *                            and websocket
+ * Return: assembled string from stringstream
+ */
+std::string VADS_live_data::get_json(void) {
 	static std::stringstream out;
 
 	out.str(std::string());
