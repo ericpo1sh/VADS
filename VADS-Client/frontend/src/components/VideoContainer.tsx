@@ -17,7 +17,7 @@ export const VideoContainer: React.FC = () => {
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video.play().then(() => {
-          video.playbackRate = 5.0;
+          video.playbackRate = 5;
         }).catch((err) => {
           console.error('Error playing video:', err);
         });

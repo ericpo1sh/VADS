@@ -41,7 +41,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({ liveLatitude, liveLongitude })
       }
     };
 
-    const intervalId = setInterval(fetchFlightData, 100); // Polling every second
+    const intervalId = setInterval(fetchFlightData, 20000); // Polling every second
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
