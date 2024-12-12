@@ -9,17 +9,6 @@
 
 #define UART_DEV "/dev/ttyUSB0"
 
-// struct termios {
-//     tcflag_t c_iflag;	/* input mode flags */
-//     tcflag_t c_oflag;	/* output mode flags */
-//     tcflag_t c_cflag;	/* control mode flags */
-//     tcflag_t c_lflag;	/* local mode flags */
-//     cc_t c_line;			/* line discipline */
-//     cc_t c_cc[NCCS];		/* control characters */
-//     speed_t c_ispeed;	/* input speed */
-//     speed_t c_ospeed;	/* output speed */
-// };
-
 typedef struct termios termios_t;
 
 static int tty_config(termios_t *tty, int port);
@@ -28,7 +17,7 @@ volatile bool receiving = true;
 
 /**
  * main - serial port communications
- * Return: 0, always
+ * Return: 0 upon success, otherwise 1
  */
 int main(int argc __attribute__((unused)), char **argv) {
 	int uart_fd = -1, read_len = 0, index = 0;

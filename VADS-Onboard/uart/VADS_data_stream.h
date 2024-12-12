@@ -1,7 +1,6 @@
-#ifndef _DATA_STREAM_H_
-#define _DATA_STREAM_H_
+#ifndef _VADS_DATA_STREAM_H_
+#define _VADS_DATA_STREAM_H_
 
-#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -27,12 +26,24 @@
 
 typedef struct termios termios_t;
 
+/**
+ * struct accel_data_s - struct for accelerometer readings
+ * @x: x-axis
+ * @y: y-axis
+ * @z: z-axis
+ */
 typedef struct accel_data_s {
 	float x;
 	float y;
 	float z;
 } accel_t;
 
+/**
+ * struct gyro_data_s - struct for gyrometer readings
+ * @x: x-axis
+ * @y: y-axis
+ * @z: z-axis
+ */
 typedef struct gyro_data_s {
 	float x;
 	float y;
