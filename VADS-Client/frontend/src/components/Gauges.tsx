@@ -39,7 +39,7 @@ export const Gauges: React.FC = () => {
       }
     };
 
-    const intervalId = setInterval(fetchFlightData, 0); // Poll every second
+    const intervalId = setInterval(fetchFlightData, 500); // Poll every second
     return () => clearInterval(intervalId); // Clean up on component unmount
   }, []);
   return (
