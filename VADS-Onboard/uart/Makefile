@@ -1,6 +1,6 @@
 CXX ?= g++
 CFLAGS = -std=gnu++11
-LDFLAGS = -lnavio -lrt -lpthread -lpigpio
+LDFLAGS = -lnavio -lrt -lpthread -lpigpio -lboost_system -lssl -lcrypto
 
 LIBDIR := $(CURDIR)/Navio
 PIGPIODIR := $(LIBDIR)/pigpio
@@ -29,7 +29,7 @@ $(BUILDDIR)/%: $(TESTDIR)/%.cpp lib
 
 data_stream: $(SOURCEDIR)/data_stream.cpp lib
 	@mkdir -p $(BUILDDIR)
-	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(SOURCEDIR)/live_data.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< $(LIBDIR)/AHRS.cpp $(SOURCEDIR)/live_data.cpp $(SOURCEDIR)/websocket.cpp $(LIB_INCLUDES) $(LDFLAGS) -o $(BUILDDIR)/$@
 
 pwm: $(SOURCEDIR)/pwm_test.cpp lib
 	@mkdir -p $(BUILDDIR)
