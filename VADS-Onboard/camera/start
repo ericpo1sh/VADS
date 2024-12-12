@@ -3,3 +3,5 @@ sudo bash -c 'echo 196608 > /proc/sys/net/core/rmem_max'
 cat /proc/sys/net/core/rmem_max
 ./getip
 ./mediamtx
+
+#/home/pi/VADS/VADS-Onboard/camera/start 2&>/home/pi/VADS/VADS-Onboard/camera/camera_log.txt &

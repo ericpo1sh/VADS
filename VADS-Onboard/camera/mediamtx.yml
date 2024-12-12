@@ -700,7 +700,8 @@ paths:
   # my_camera:
   #   source: rtsp://my_camera
   stream:
-     runOnInit: sudo bash -c 'raspivid -w 1536 -h 864 -fps 60 -b 10000000 -fl -t 0 -p '0,0,672,378' -o - | ffmpeg -i pipe:0 -c:v copy -preset ultrafast -tune zerolatency -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH'
+     runOnInit: sudo bash -c 'raspivid -w 1536 -h 864 -n -fps 60 -b 10000000 -vf -fl -t 0 -o - | ffmpeg -i pipe:0 -c:v copy -preset ultrafast -tune zerolatency -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH'
+  #   runOnInit: sudo bash -c 'raspivid -w 1536 -h 864 -fps 60 -b 10000000 -vf -fl -t 0 -p '0,0,672,378' -o - | ffmpeg -i pipe:0 -c:v copy -preset ultrafast -tune zerolatency -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH'
   #   runOnInit: sudo bash -c 'raspivid -w 1536 -h 864 -fps 60 -b 10000000 -fl -t 0 -p '400,0,672,378' -o - | ffmpeg -i pipe:0 -c:v copy -preset ultrafast -tune zerolatency -f rtsp rtsp://127.0.0.1:$RTSP_PORT/$MTX_PATH'
   #   runOnInit: sudo bash -c 'rpicam-vid -t 0 -n --codec yuv420 --width 1536 --height 864 --inline --listen -o - | ffmpeg -f rawvideo -pix_fmt yuv420p -s:v 1536x864 -i /dev/stdin -c:v libx264 -preset ultrafast -tune zerolatency -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH'
      runOnInitRestart: yes

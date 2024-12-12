@@ -32,20 +32,23 @@ try {
   });
 
   // Set up the parser and pipe data into it
-  const parser = serialPort.pipe(new DelimiterParser({ delimiter: '\n' }));
+  const parser = serialPort.pipe(new ReadlineParser());
 
   let flightData = {};
 
   let velocity = 0;
   parser.on('data', (data) => {
-  // try {
-    flightData = JSON.parse(data);
-    console.log(flightData);
-    const acX = flightData.ax;
-    const acY = flightData.ay;
-    velocity = calcSpeed(velocity, acX, acY);
-    flightData.velocity = velocity;
-    console.log("Updated Flight Data:", flightData);
+    try {
+      flightData = JSON.parse(data);
+      // console.log(flightData);
+      const acX = flightData.accel.x;
+      const acY = flightData.accel.y;
+      velocity = calcSpeed(velocity, acX, acY);
+      flightData.velocity = velocity;
+      console.log("Updated Flight Data:", flightData);
+    } catch (error) {
+      console.error("Unexpected characters received in data");
+    }
   });
 
   function calcSpeed(prevVel, acX, acY) {
@@ -54,7 +57,7 @@ try {
       return prevVel;
     }
     const accV = Math.sqrt(Math.pow(acX, 2) + Math.pow(acY, 2));
-    return Math.abs(prevVel + accV * 2);
+    return Math.round((Math.abs(accV * 2) + Number.EPSILON) * 1000000) / 1000000;
   }
 
   app.get("/api/flight-data", (req, res) => {

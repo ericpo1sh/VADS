@@ -62,7 +62,7 @@ export const Leaderboard: React.FC = () => {
   return (
     <div style={{ display: "flex", flexDirection: 'column', backgroundColor: '#D9D9D9', width: '44.65%', height: '95%', margin: '7px 0px 7px 12px', borderRadius: '20px 0px 0px 20px', justifyContent: 'space-around', alignContent: 'center', alignItems: 'center', overflowY: 'auto' }}>
       {/* Sorting Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0px', marginTop: '20px', alignItems: 'center', marginLeft: '0px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0px', marginTop: '13px', alignItems: 'center', marginLeft: '0px' }}>
         <div style={{ position: 'relative', marginRight: '360px' }}>
           <select id="sort-by" value={sortField} onChange={(e) => handleSortFieldChange(e.target.value as keyof User)} style={{ padding: '10px', cursor: 'pointer', borderRadius: '5px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', outline: 'none', fontFamily: 'Roboto Mono', fontWeight: '600' }}>
             <option value="total_flight_time">Total Flight Time</option>

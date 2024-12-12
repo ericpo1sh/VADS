@@ -113,7 +113,7 @@ export const Account: React.FC = () => {
 
   return (
     <div style={{ position: 'relative', width: '25%', zIndex: 99, background: '#444444'}}>
-      <div style={{ backgroundColor: '#444444', position: 'absolute', width: '105%', height: '100%', zIndex: -1, top: -8, borderTop: '8px solid white' }}></div>
+      <div style={{ backgroundColor: '#444444', position: 'absolute', width: '105%', height: '100%', zIndex: -1, top: -8, borderTop: '8px solid white', borderBottom: '8px solid white' }}></div>
       <div style={{ display: "flex", flexDirection: 'column', backgroundColor: '#D9D9D9', width: '100%', height: '95%', margin: '7px 0px 7px 7px', borderRadius: '0px 20px 20px 0px', justifyContent: 'space-around' }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', alignItems: "center", margin: '0px 0px 0px -15px' }}>
           <img src={userData?.profilePic || user_icon} alt="placeholder user pic" width={'90px'} height={'90px'} style={{ marginLeft: '30px', borderRadius: '50%', border: '2px solid black' }} />
